@@ -35,7 +35,7 @@ function openSettings(currentModal) {
     });
 
     // theme selection
-    settings.querySelectorAll('[data-theme').forEach(btn => {
+    settings.querySelectorAll('[data-theme]').forEach(btn => {
         btn.addEventListener('click', () => {
             const theme = btn.getAttribute('data-theme');
             chrome.storage.local.set({ ninerTheme: theme });
@@ -54,7 +54,21 @@ function applyTheme(modalContainer, theme) {
     modalContainer.classList.add(`niner-theme-${theme}`);
 }
 
+function renderTray(trayCoursesEL, courses) {
+    trayCoursesEL.innerHTML = '';
 
+    if (courses.length === 0) {
+        trayCoursesEL.innerHTML = '<span class="niner-tray-empty">Add courses to build your calendar export</span>';
+        return;
+    }
+
+    courses.forEach((course, index) => {
+        const chip = document.createElement('div');
+        chip.className = 'niner-tray-chip';
+        chip.innerHTML = `${course.subject} ${course.courseNumber}`;
+        trayCoursesEL.appendChild(chip);
+    })
+}
 
 function openModal(clickedElement, rmpData) {
     const existingModal = document.getElementById('niner-registration-modal');
@@ -144,6 +158,88 @@ function openModal(clickedElement, rmpData) {
             overlay.remove();
         }
     });
+       
+    const trayCoursesEL = modalContainer.querySelector('.niner-tray-courses');
+    const addBtn = modalContainer.querySelector('.niner-tray-add');
+    const undoBtn = modalContainer.querySelector('.niner-tray-undo');
+    const exportBtn = modalContainer.querySelector('.niner-tray-export');
+
+    chrome.storage.local.get('ninerQueue', (result) => {
+        const queue = result.ninerQueue || [];
+        renderTray(trayCoursesEL, queue);
+
+        const alreadyAdded = queue.some(c =>
+            c.subject === courseData.subject &&
+            c.courseNumber === courseData.courseNumber
+        );
+        if (alreadyAdded) {
+            addBtn.textContent = '✓ Added';
+            addBtn.style.background = '#035a2f';
+        }
+    });
+
+    addBtn.addEventListener('click', () => {
+    chrome.storage.local.get('ninerQueue', (result) => {
+        const queue = result.ninerQueue || [];
+
+        const alreadyAdded = queue.some(c =>
+            c.subject === courseData.subject &&
+            c.courseNumber === courseData.courseNumber
+        );
+
+        if (alreadyAdded) {
+            const newQueue = queue.filter(c =>
+                !(c.subject === courseData.subject &&
+                  c.courseNumber === courseData.courseNumber)
+            );
+            chrome.storage.local.set({ ninerQueue: newQueue });
+            renderTray(trayCoursesEL, newQueue);
+            addBtn.textContent = '+ Add';
+            addBtn.style.background = '#046A38';
+        } else {
+            const courseToSave = {
+                subject: courseData.subject,
+                courseNumber: courseData.courseNumber,
+                title: courseData.title,
+                credits: courseData.credits,
+                meetings: courseData.meetings
+            };
+            const newQueue = [...queue, courseToSave];
+            chrome.storage.local.set({ ninerQueue: newQueue });
+            renderTray(trayCoursesEL, newQueue);
+            addBtn.textContent = '✓ Added';
+            addBtn.style.background = '#035a2f';
+        }
+    });
+});
+
+    undoBtn.addEventListener('click', () => {
+    chrome.storage.local.get('ninerQueue', (result) => {
+        const queue = result.ninerQueue || [];
+        if (queue.length === 0) return;
+
+        const newQueue = queue.slice(0, -1);
+        chrome.storage.local.set({ ninerQueue: newQueue });
+        renderTray(trayCoursesEL, newQueue);
+
+        const stillAdded = newQueue.some(c =>
+            c.subject === courseData.subject &&
+            c.courseNumber === courseData.courseNumber
+        );
+        if (!stillAdded) {
+            addBtn.textContent = '+ Add';
+            addBtn.style.background = '#046A38';
+        }
+    });
+});
+
+    exportBtn.addEventListener('click', () => {
+    chrome.storage.local.get('ninerQueue', (result) => {
+        const queue = result.ninerQueue || [];
+        if (queue.length === 0) return;
+        exportToICS(queue);
+    });
+});
 } 
 
 function parseCourseRow(clickedElement) {

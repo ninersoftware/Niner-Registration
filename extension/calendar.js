@@ -12,7 +12,7 @@ function dayToICS(dayName) {
 }
 
 function dateToICS(dateStr) {
-    const parts = dataStr.split('/');
+    const parts = dateStr.split('/');
     const month = parts[0];
     const day = parts[1];
     const year = parts[2];
@@ -41,7 +41,7 @@ function timeToICS(timeStr) {
 
 function getStartAndEnd(meeting) {
     const timeParts = meeting.time.split(' - ');
-    const startTime = timeToICS(timeparts[0]);
+    const startTime = timeToICS(timeParts[0]);
     const endTime = timeToICS(timeParts[1]);
     const startDateICS = dateToICS(meeting.startDate);
     const endDateICS = dateToICS(meeting.endDate);
@@ -51,17 +51,16 @@ function getStartAndEnd(meeting) {
 function buildICS(courses) {
     let icsContent = [
         'BEGIN:VCALENDAR',
-        'VERSION: 2.0',
+        'VERSION:2.0',
         'PRODID:-//ninersoftware//Niner-Registration//EN',
-        'CALSCALE: GREGORIAN'
+        'CALSCALE:GREGORIAN'
     ].join('\r\n');
 
     courses.forEach((course, courseIndex) => {
         course.meetings.forEach((meeting, meetingIndex) => {
             const { startTime, endTime, startDateICS, endDateICS } = getStartAndEnd(meeting);
             const byDay = meeting.days.map(d => dayToICS(d)).join(',');
-            const uid = `${course.subject}${course.courseNumber}-${courseIndex}-${meetindIndex}@ninersoftware`;
-
+            const uid = `${course.subject}${course.courseNumber}-${courseIndex}-${meetingIndex}@ninersoftware`;
             const vevent = [
                 'BEGIN:VEVENT',
                 `UID:${uid}`,
@@ -73,21 +72,23 @@ function buildICS(courses) {
                 `DESCRIPTION:${course.credits} Credits`,
                 'END:VEVENT'
             ].join('\r\n');
-
             icsContent += '\r\n' + vevent;
-            return icsContent;
         });
     });
+
+    icsContent += '\r\nEND:VCALENDAR';
+    return icsContent;
 }
 
 function exportToICS(courses) {
+    console.log('exportToICS called with', courses);
     if (!courses || courses.length === 0) return;
     const content = buildICS(courses);
     const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    const a document.createElement('a');
+    const a = document.createElement('a');
     a.href = url;
-    a.download = 'niner-schedule.ics'.;
+    a.download = 'niner-schedule.ics';
     a.click();
-    URL.apply.revokeObjectURL(url);
+    URL.revokeObjectURL(url);
 }
