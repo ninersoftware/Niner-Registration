@@ -508,7 +508,7 @@ td[xe-field="instructor"] {
     gap: 8px;
 }
 
-.niner-theme-btn {
+.niner-theme-btn-white {
     flex: 1;
     padding: 8px 0;
     border-radius: 6px;
@@ -522,15 +522,52 @@ td[xe-field="instructor"] {
     transition: all 0.15s;
 }
 
+.niner-theme-btn-green {
+    flex: 1;
+    padding: 8px 0;
+    border-radius: 6px;
+    border: 1.5px solid rgba(0,0,0,0.12);
+    background: #046A38;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'General-Sans', sans-serif;
+    color: rgba(0,0,0,0.5);
+    transition: all 0.15s;
+}
+
+.niner-theme-btn-dark {
+    flex: 1;
+    padding: 8px 0;
+    border-radius: 6px;
+    border: 1.5px solid rgba(0,0,0,0.12);
+    background: #101820;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'General-Sans', sans-serif;
+    color: rgba(0,0,0,0.5);
+    transition: all 0.15s;
+}
+
 .niner-theme-btn:hover {
     border-color: #046A38;
     color: #046A38;
 }
 
-.niner-theme-btn-active {
-    border-color: #046A38;
-    color: #046A38;
-    background: #f0f7f3;
+.niner-theme-btn-white.niner-theme-btn-active {
+    outline: 2.5px solid #101820;
+    outline-offset: 2px;
+}
+
+.niner-theme-btn-dark.niner-theme-btn-active {
+    outline: 2.5px solid #ffffff;
+    outline-offset: 2px;
+}
+
+.niner-theme-btn-green.niner-theme-btn-active {
+    outline: 2.5px solid #ffffff;
+    outline-offset: 2px;
 }
 
 .niner-theme-white {

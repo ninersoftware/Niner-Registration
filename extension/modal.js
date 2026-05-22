@@ -14,9 +14,9 @@ function openSettings(currentModal) {
             <div class="niner-settings-section">
                 <span class="niner-settings-label">THEME</span>
                 <div class="niner-theme-options">
-                    <button class="niner-theme-btn" data-theme="white">White</button>
-                    <button class="niner-theme-btn" data-theme="dark">Black</button>
-                    <button class="niner-theme-btn" data-theme="green">Green</button>
+                    <button class="niner-theme-btn-white" data-theme="white"></button>
+                    <button class="niner-theme-btn-dark" data-theme="dark"></button>
+                    <button class="niner-theme-btn-green" data-theme="green"></button>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@ function openSettings(currentModal) {
     // mark active theme
     chrome.storage.local.get('ninerTheme', (result) => {
         const current = result.ninerTheme || 'white';
-        settings.querySelectorAll('.niner-theme-btn').forEach(btn => {
+        settings.querySelectorAll('[data-theme]').forEach(btn => {
             if (btn.getAttribute('data-theme') === current) {
                 btn.classList.add('niner-theme-btn-active');
             }
@@ -35,12 +35,12 @@ function openSettings(currentModal) {
     });
 
     // theme selection
-    settings.querySelectorAll('.niner-theme-btn').forEach(btn => {
+    settings.querySelectorAll('[data-theme').forEach(btn => {
         btn.addEventListener('click', () => {
             const theme = btn.getAttribute('data-theme');
             chrome.storage.local.set({ ninerTheme: theme });
             applyTheme(currentModal, theme);
-            settings.querySelectorAll('.niner-theme-btn').forEach(b => b.classList.remove('niner-theme-btn-active'));
+            settings.querySelectorAll('[data-theme]').forEach(b => b.classList.remove('niner-theme-btn-active'));
             btn.classList.add('niner-theme-btn-active');
         });
     });
