@@ -38,3 +38,12 @@ function timeToICS(timeStr) {
     const hourPadded = hour.toString().padStart(2, '0');
     return `${hourPadded}${minute}00`;
 }
+
+function getStartAndEnd(meeting) {
+    const timeParts = meeting.time.split(' - ');
+    const startTime = timeToICS(timeparts[0]);
+    const endTime = timeToICS(timeParts[1]);
+    const startDateICS = dateToICS(meeting.startDate);
+    const endDateICS = dateToICS(meeting.endDate);
+    return { startTime, endTime, startDateICS, endDateICS};
+}
