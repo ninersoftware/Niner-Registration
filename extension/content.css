@@ -34,21 +34,32 @@
 
 .professor-stats {
     display: none;
-    bottom: auto;
-    top: 0;
-    left: 100%;
+    position: fixed;
     z-index: 9999;
-    background: #0b120f; 
+    background: #0b120f;
     backdrop-filter: blur(8px);
     color: #ffffff;
     border-radius: 8px;
     padding: 12px 14px;
-    white-space: nowrap;
+    white-space: normal;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     flex-direction: column;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 10px;
     min-width: 220px;
+    max-width: 260px;
+    box-sizing: border-box;
+}
+
+/* FIX 1: Invisible Hover Bridge to eliminate the hover gap */
+.professor-stats::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    z-index: -1;
 }
 
 .professor-header {
@@ -64,6 +75,7 @@
     flex-direction: row;
     align-items: center;
     gap: 12px;
+    width: 100%;
 }
 
 .professor-full-name {
@@ -74,20 +86,21 @@
 }
 
 .professor-name {
-    color: #1e5a8a !important; 
+    color: #1e5a8a !important;
     text-decoration: none !important;
     text-underline-offset: 3px;
     font-weight: 600;
     font-size: 13px;
     letter-spacing: 0.01em;
     display: block;
+    cursor: pointer;
 }
 
 .professor-name:hover {
     text-decoration: underline !important;
 }
 
-.professor-name, 
+.professor-name,
 .professor-name-plain {
     max-width: 100%;
     overflow: hidden;
@@ -109,6 +122,7 @@
     border-radius: 6px;
     padding: 8px 12px;
     min-width: 52px;
+    flex-shrink: 0;
 }
 
 .rating-number {
@@ -127,11 +141,14 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    flex: 1;
+    min-width: 0;
 }
 
 .rating-details span {
     font-size: 14px;
     color: inherit;
+    white-space: normal;
 }
 
 .rating-dot {
@@ -141,6 +158,7 @@
     border-radius: 50%;
     margin-right: 6px;
     vertical-align: middle;
+    flex-shrink: 0;
 }
 
 .low-ratings-warning,
@@ -159,16 +177,65 @@ td[xe-field="instructor"] {
     overflow: visible !important;
 }
 
+.tooltip-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 4px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 8px;
+}
+
+.tooltip-btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 7px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    font-family: 'General-Sans', sans-serif;
+    transition: background 0.15s;
+    text-decoration: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    white-space: normal;
+    line-height: 1.3;
+}
+
+/* FIX 2: Increased specificity using .professor-stats parent container wrapping */
+.professor-stats .tooltip-btn-rmp {
+    background: rgba(128, 128, 128, 0.25) !important;
+    color: #ffffff !important;
+}
+
+.professor-stats .tooltip-btn-rmp:hover {
+    background: rgba(128, 128, 128, 0.4) !important;
+}
+
+.professor-stats .tooltip-btn-detail {
+    background: #046A38 !important;
+    color: white !important;
+}
+
+.professor-stats .tooltip-btn-detail:hover {
+    background: #035a2f !important;
+}
+
+/* Remaining styles preserved exactly as provided */
 .niner-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5); 
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 99999;
 }
-
 .niner-modal-container {
     width: 640px;
     border-radius: 12px;
@@ -178,14 +245,12 @@ td[xe-field="instructor"] {
     overflow: hidden;
     font-family: 'General-Sans', sans-serif;
 }
-
 .niner-topbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 18px 24px 0 24px;
 }
-
 .niner-settings-btn,
 .niner-close-btn {
     background: none;
@@ -199,38 +264,32 @@ td[xe-field="instructor"] {
     text-shadow: none !important;
     transition: color 0.15s;
 }
-
 .niner-header {
     padding: 12px 24px 20px 24px;
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
-
 .niner-prof {
     font-size: 26px;
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.1;
 }
-
 .niner-course,
 .niner-modal-meeting {
-    font-size: 14px; 
-    font-weight: 500; 
+    font-size: 14px;
+    font-weight: 500;
     margin-top: 4px;
 }
-
 .niner-modal-meeting {
     margin-top: 2px;
 }
-
 .niner-divider {
     height: 1px;
     background: transparent !important;
     margin: 0 24px;
 }
-
 .niner-grade-section {
     padding: 22px 24px;
     display: flex;
@@ -240,25 +299,21 @@ td[xe-field="instructor"] {
     justify-content: center;
     align-items: flex-start;
 }
-
 .niner-section-label {
-    font-size: 11px; 
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
 }
-
 .niner-grade-placeholder {
     font-size: 13px;
     font-style: italic;
 }
-
 .niner-links {
     display: flex;
     gap: 28px;
     padding: 16px 24px 22px 24px;
 }
-
 .niner-link {
     font-size: 13px;
     font-weight: 600;
@@ -270,12 +325,10 @@ td[xe-field="instructor"] {
     box-shadow: none !important;
     background: transparent !important;
 }
-
 .niner-link:hover {
     text-decoration: underline !important;
     opacity: 0.85;
 }
-
 .niner-tray {
     display: flex;
     align-items: center;
@@ -285,7 +338,6 @@ td[xe-field="instructor"] {
     padding: 4px 4px;
     border: none;
 }
-
 .niner-tray-add {
     background: #046A38;
     color: #ffffff;
@@ -302,11 +354,9 @@ td[xe-field="instructor"] {
     box-shadow: none;
     transition: background 0.15s;
 }
-
 .niner-tray-add:hover {
     background: #035a2f;
 }
-
 .niner-tray-courses {
     display: flex;
     gap: 6px;
@@ -316,17 +366,14 @@ td[xe-field="instructor"] {
     align-items: center;
     padding: 0 12px;
 }
-
 .niner-tray-courses::-webkit-scrollbar {
     display: none;
 }
-
 .niner-tray-empty {
     font-size: 11px;
     font-style: italic;
     white-space: nowrap;
 }
-
 .niner-tray-chip {
     display: flex;
     align-items: center;
@@ -341,7 +388,6 @@ td[xe-field="instructor"] {
     white-space: nowrap;
     flex-shrink: 0;
 }
-
 .niner-tray-chip-remove {
     background: none;
     border: none;
@@ -352,17 +398,14 @@ td[xe-field="instructor"] {
     line-height: 1;
     margin: 0;
 }
-
 .niner-tray-chip-remove:hover {
     color: #046A38;
 }
-
 .niner-tray-actions {
     display: flex;
     gap: 6px;
     flex-shrink: 0;
 }
-
 .niner-tray-btn {
     background: none;
     border: none;
@@ -376,13 +419,11 @@ td[xe-field="instructor"] {
     box-shadow: none !important;
     transition: all 0.15s;
 }
-
 .niner-tray-export {
     background: none;
     border: none;
     font-weight: 700;
 }
-
 .niner-credit {
     font-size: 10px;
     font-style: italic;
@@ -391,7 +432,6 @@ td[xe-field="instructor"] {
     border: none !important;
     margin: 0 !important;
 }
-
 .niner-settings-overlay {
     position: fixed;
     inset: 0;
@@ -401,7 +441,6 @@ td[xe-field="instructor"] {
     align-items: center;
     justify-content: center;
 }
-
 .niner-settings-panel {
     background: #ffffff;
     border-radius: 12px;
@@ -410,14 +449,12 @@ td[xe-field="instructor"] {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
     font-family: 'General-Sans', sans-serif;
 }
-
 .niner-settings-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
 }
-
 .niner-settings-title {
     font-size: 12px;
     font-weight: 700;
@@ -425,7 +462,6 @@ td[xe-field="instructor"] {
     letter-spacing: 0.05em;
     text-transform: uppercase;
 }
-
 .niner-settings-close {
     background: none;
     border: none;
@@ -438,17 +474,14 @@ td[xe-field="instructor"] {
     box-shadow: none;
     transition: color 0.15s;
 }
-
 .niner-settings-close:hover {
     color: rgba(0, 0, 0, 0.8);
 }
-
 .niner-settings-section {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
-
 .niner-settings-label {
     font-size: 10px;
     font-weight: 700;
@@ -456,12 +489,10 @@ td[xe-field="instructor"] {
     text-transform: uppercase;
     color: rgba(0, 0, 0, 0.4);
 }
-
 .niner-theme-options {
     display: flex;
     gap: 8px;
 }
-
 .niner-theme-btn-white {
     flex: 1;
     padding: 8px 0;
@@ -475,7 +506,6 @@ td[xe-field="instructor"] {
     color: rgba(0,0,0,0.5);
     transition: all 0.15s;
 }
-
 .niner-theme-btn-green {
     flex: 1;
     padding: 8px 0;
@@ -489,7 +519,6 @@ td[xe-field="instructor"] {
     color: rgba(0,0,0,0.5);
     transition: all 0.15s;
 }
-
 .niner-theme-btn-dark {
     flex: 1;
     padding: 8px 0;
@@ -503,27 +532,23 @@ td[xe-field="instructor"] {
     color: rgba(255,255,255,0.5);
     transition: all 0.15s;
 }
-
 .niner-theme-btn:hover {
     border-color: #046A38;
     color: #046A38;
 }
-
 .niner-theme-btn-white.niner-theme-btn-active { outline: 2.5px solid #101820; outline-offset: 2px; }
 .niner-theme-btn-dark.niner-theme-btn-active  { outline: 2.5px solid #ffffff; outline-offset: 2px; }
 .niner-theme-btn-green.niner-theme-btn-active { outline: 2.5px solid #ffffff; outline-offset: 2px; }
 
-.niner-theme-white { 
-    background: #ffffff; 
-}
+.niner-theme-white { background: #ffffff; }
 .niner-theme-white .niner-prof { color: #046A38; }
-.niner-theme-white .niner-course { color: #2d3748; }            
-.niner-theme-white .niner-modal-meeting { color: #4a5568; }     
+.niner-theme-white .niner-course { color: #2d3748; }
+.niner-theme-white .niner-modal-meeting { color: #4a5568; }
 .niner-theme-white .niner-divider { background: transparent !important; }
-.niner-theme-white .niner-section-label { color: #718096; }     
+.niner-theme-white .niner-section-label { color: #718096; }
 .niner-theme-white .niner-grade-placeholder { color: #718096; }
-.niner-theme-white .niner-link { color: #1e4a9e !important; }   
-.niner-theme-white .niner-link-coursicle { color: #0c6196 !important; } 
+.niner-theme-white .niner-link { color: #1e4a9e !important; }
+.niner-theme-white .niner-link-coursicle { color: #0c6196 !important; }
 .niner-theme-white .niner-tray { background: #f2f2f2; }
 .niner-theme-white .niner-tray-empty { color: #718096; }
 .niner-theme-white .niner-tray-btn { color: #4a5568; }
@@ -536,16 +561,14 @@ td[xe-field="instructor"] {
 .niner-theme-white .niner-close-btn:hover { color: #1a202c; }
 .niner-theme-white .niner-credit { color: #a0aec0; }
 
-.niner-theme-dark { 
-    background: #101820; 
-}
+.niner-theme-dark { background: #101820; }
 .niner-theme-dark .niner-prof { color: #ffffff; }
-.niner-theme-dark .niner-course { color: rgba(255, 255, 255, 0.88); } 
-.niner-theme-dark .niner-modal-meeting { color: rgba(255, 255, 255, 0.7); } 
+.niner-theme-dark .niner-course { color: rgba(255, 255, 255, 0.88); }
+.niner-theme-dark .niner-modal-meeting { color: rgba(255, 255, 255, 0.7); }
 .niner-theme-dark .niner-divider { background: transparent !important; }
-.niner-theme-dark .niner-section-label { color: rgba(255, 255, 255, 0.5); }  
+.niner-theme-dark .niner-section-label { color: rgba(255, 255, 255, 0.5); }
 .niner-theme-dark .niner-grade-placeholder { color: rgba(255, 255, 255, 0.45); }
-.niner-theme-dark .niner-link { color: #9bc5ff !important; }    
+.niner-theme-dark .niner-link { color: #9bc5ff !important; }
 .niner-theme-dark .niner-link-coursicle { color: #80d3ff !important; }
 .niner-theme-dark .niner-tray { background: #1e2a35; }
 .niner-theme-dark .niner-tray-empty { color: rgba(255, 255, 255, 0.45); }
@@ -560,16 +583,14 @@ td[xe-field="instructor"] {
 .niner-theme-dark .niner-close-btn:hover { color: #ffffff; }
 .niner-theme-dark .niner-credit { color: rgba(255, 255, 255, 0.3); }
 
-.niner-theme-green { 
-    background: #046A38; 
-}
+.niner-theme-green { background: #046A38; }
 .niner-theme-green .niner-prof { color: #ffffff; }
 .niner-theme-green .niner-course { color: #ffffff; }
-.niner-theme-green .niner-modal-meeting { color: rgba(255, 255, 255, 0.85); } 
+.niner-theme-green .niner-modal-meeting { color: rgba(255, 255, 255, 0.85); }
 .niner-theme-green .niner-divider { background: transparent !important; }
-.niner-theme-green .niner-section-label { color: rgba(255, 255, 255, 0.65); } 
+.niner-theme-green .niner-section-label { color: rgba(255, 255, 255, 0.65); }
 .niner-theme-green .niner-grade-placeholder { color: rgba(255, 255, 255, 0.55); }
-.niner-theme-green .niner-link { color: #ffffff !important; font-weight: 700; } 
+.niner-theme-green .niner-link { color: #ffffff !important; font-weight: 700; }
 .niner-theme-green .niner-link-coursicle { color: #ffffff !important; font-weight: 700; }
 .niner-theme-green .niner-tray { background: #035a2f; }
 .niner-theme-green .niner-tray-empty { color: rgba(255, 255, 255, 0.55); }
