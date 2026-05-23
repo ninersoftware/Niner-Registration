@@ -28,19 +28,23 @@
     min-width: 0;
 }
 
+.professor-container:hover .professor-stats {
+    display: flex;
+}
+
 .professor-stats {
     display: none;
     bottom: auto;
     top: 0;
     left: 100%;
     z-index: 9999;
-    background: #101820;
+    background: #0b120f; 
     backdrop-filter: blur(8px);
-    color: white;
+    color: #ffffff;
     border-radius: 8px;
-    padding: 10px 12px;
+    padding: 12px 14px;
     white-space: nowrap;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     flex-direction: column;
     align-items: center;
     gap: 12px;
@@ -50,8 +54,8 @@
 .professor-header {
     width: 100%;
     text-align: center;
-    padding-bottom: 6px;
-    border-bottom: 1px solid rgba(255,255,255,0.15);
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     margin-bottom: 4px;
 }
 
@@ -70,34 +74,26 @@
 }
 
 .professor-name {
-    color: #2e6da4 !important;
+    color: #1e5a8a !important; 
     text-decoration: none !important;
-    text-underline-offset: 2px;
+    text-underline-offset: 3px;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 13px;
     letter-spacing: 0.01em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
     display: block;
 }
 
 .professor-name:hover {
-    color: #2e6da4 !important;
     text-decoration: underline !important;
 }
 
-.professor-name, .professor-name-plain {
+.professor-name, 
+.professor-name-plain {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: block;
     white-space: nowrap;
-}
-
-.professor-container:hover .professor-stats {
-    display: flex;
+    display: block;
 }
 
 .professor-stats span {
@@ -109,7 +105,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content:center;
+    justify-content: center;
     border-radius: 6px;
     padding: 8px 12px;
     min-width: 52px;
@@ -118,13 +114,13 @@
 .rating-number {
     font-size: 30px;
     font-weight: 700;
-    color: white;
+    color: #ffffff;
     line-height: 1;
 }
 
 .rating-label {
-    font-size: 18px;
-    color: rgba(255, 255, 255, 0.7)
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.75);
 }
 
 .rating-details {
@@ -134,9 +130,8 @@
 }
 
 .rating-details span {
-    font-size: 15px;
+    font-size: 14px;
     color: inherit;
-    font-family: 'General-Sans', sans-serif;
 }
 
 .rating-dot {
@@ -144,26 +139,21 @@
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    margin-right: 5px;
+    margin-right: 6px;
     vertical-align: middle;
 }
 
-.low-ratings-warning {
-    margin-left: 3px;
+.low-ratings-warning,
+.last-review {
     font-size: 13px;
+    color: inherit;
     display: block;
     text-align: center;
     width: 100%;
 }
 
-.last-review {
-    font-size: 13px;
-    color: inherit;
-    margin-top: 6px;
-    display: block;
-    text-align: center;
-    width: 100%;
-}
+.low-ratings-warning { margin-left: 3px; }
+.last-review { margin-top: 8px; }
 
 td[xe-field="instructor"] {
     overflow: visible !important;
@@ -171,11 +161,8 @@ td[xe-field="instructor"] {
 
 .niner-modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0,0,0,0.45);
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5); 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -183,10 +170,9 @@ td[xe-field="instructor"] {
 }
 
 .niner-modal-container {
-    background: #ffffff;
     width: 640px;
-    border-radius: 10px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    border-radius: 12px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.22);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -197,7 +183,7 @@ td[xe-field="instructor"] {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 24px 0 24px;
+    padding: 18px 24px 0 24px;
 }
 
 .niner-settings-btn,
@@ -206,114 +192,95 @@ td[xe-field="instructor"] {
     border: none;
     cursor: pointer;
     font-size: 18px;
-    color: rgba(0,0,0,0.3);
     padding: 0;
     line-height: 1;
-    transition: color 0.15s;
-    font-family: 'General-Sans', sans-serif;
+    margin: 0 !important;
     box-shadow: none !important;
     text-shadow: none !important;
-    margin: 0 !important;
-}
-
-.niner-settings-btn:hover,
-.niner-close-btn:hover {
-    color: rgba(0,0,0,0.7);
+    transition: color 0.15s;
 }
 
 .niner-header {
     padding: 12px 24px 20px 24px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
 }
 
 .niner-prof {
     font-size: 26px;
     font-weight: 700;
-    color: #046A38;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.02em;
     line-height: 1.1;
 }
 
-.niner-course {
-    font-size: 12px;
-    font-weight: 400;
-    color: rgba(0,0,0,0.45);
-    margin-top: 2px;
+.niner-course,
+.niner-modal-meeting {
+    font-size: 14px; 
+    font-weight: 500; 
+    margin-top: 4px;
 }
 
 .niner-modal-meeting {
-    display: block;
-    font-size: 12px;
-    font-weight: 400;
-    color: rgba(0,0,0,0.35);
-    margin-top: 1px;
+    margin-top: 2px;
 }
 
 .niner-divider {
     height: 1px;
-    background: transparent !important; /* Keeps structural space but remains invisible */
+    background: transparent !important;
     margin: 0 24px;
 }
 
 .niner-grade-section {
-    padding: 20px 24px;
+    padding: 22px 24px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    min-height: 160px; /* Keeps space open for future grade components */
+    gap: 12px;
+    min-height: 160px;
     justify-content: center;
     align-items: flex-start;
 }
 
 .niner-section-label {
-    font-size: 10px;
+    font-size: 11px; 
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(0,0,0,0.25);
 }
 
 .niner-grade-placeholder {
     font-size: 13px;
     font-style: italic;
-    color: rgba(0,0,0,0.2);
 }
 
 .niner-links {
     display: flex;
-    gap: 24px;
-    padding: 16px 24px 20px 24px;
+    gap: 28px;
+    padding: 16px 24px 22px 24px;
 }
 
 .niner-link {
     font-size: 13px;
     font-weight: 600;
-    color: #0021FF !important;
     text-decoration: none !important;
+    text-underline-offset: 3px;
     transition: opacity 0.15s;
     display: inline-block !important;
     border: none !important;
-    border-bottom: none !important;
     box-shadow: none !important;
     background: transparent !important;
 }
 
 .niner-link:hover {
-    opacity: 0.7;
-}
-
-.niner-link-coursicle {
-    color: #0B7BCE !important;
+    text-decoration: underline !important;
+    opacity: 0.85;
 }
 
 .niner-tray {
     display: flex;
     align-items: center;
     gap: 0;
-    margin: 0 24px 12px 24px;
-    background: #f2f2f2;
+    margin: 0 24px 14px 24px;
     border-radius: 999px;
     padding: 4px 4px;
     border: none;
@@ -321,16 +288,18 @@ td[xe-field="instructor"] {
 
 .niner-tray-add {
     background: #046A38;
-    color: white;
+    color: #ffffff;
     border: none;
     border-radius: 999px;
-    padding: 5px 14px;
+    padding: 6px 16px;
     font-size: 11px;
     font-weight: 700;
     cursor: pointer;
-    font-family: 'General-Sans', sans-serif;
     white-space: nowrap;
     flex-shrink: 0;
+    line-height: 1;
+    margin: 0;
+    box-shadow: none;
     transition: background 0.15s;
 }
 
@@ -345,7 +314,7 @@ td[xe-field="instructor"] {
     overflow-x: auto;
     scrollbar-width: none;
     align-items: center;
-    padding: 0 10px;
+    padding: 0 12px;
 }
 
 .niner-tray-courses::-webkit-scrollbar {
@@ -354,36 +323,34 @@ td[xe-field="instructor"] {
 
 .niner-tray-empty {
     font-size: 11px;
-    color: rgba(0,0,0,0.25);
     font-style: italic;
-    font-family: 'General-Sans', sans-serif;
     white-space: nowrap;
 }
 
 .niner-tray-chip {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
+    gap: 5px;
+    padding: 4px 10px;
     background: #f0f7f3;
-    border: 1px solid rgba(4,106,56,0.2);
+    border: 1px solid rgba(4, 106, 56, 0.25);
     border-radius: 999px;
     font-size: 11px;
     font-weight: 600;
     color: #046A38;
     white-space: nowrap;
     flex-shrink: 0;
-    font-family: 'General-Sans', sans-serif;
 }
 
 .niner-tray-chip-remove {
     background: none;
     border: none;
-    color: rgba(4,106,56,0.4);
+    color: rgba(4, 106, 56, 0.45);
     cursor: pointer;
     padding: 0;
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1;
+    margin: 0;
 }
 
 .niner-tray-chip-remove:hover {
@@ -404,47 +371,31 @@ td[xe-field="instructor"] {
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
-    font-family: 'General-Sans', sans-serif;
-    color: rgba(0,0,0,0.4);
-    transition: all 0.15s;
-    box-shadow: none !important;
+    line-height: 1;
     margin: 0 !important;
-}
-
-.niner-tray-btn:hover {
-    color: black;
-    background: rgba(0,0,0,0.06);
+    box-shadow: none !important;
+    transition: all 0.15s;
 }
 
 .niner-tray-export {
     background: none;
     border: none;
-    color: #046A38;
     font-weight: 700;
 }
 
-.niner-tray-export:hover {
-    background: rgba(4,106,56,0.08);
-    color: #046A38;
-}
-
 .niner-credit {
-    font-size: 9px;
+    font-size: 10px;
     font-style: italic;
-    color: rgba(0,0,0,0.15);
-    font-family: 'General-Sans', sans-serif;
     text-align: right;
-    padding: 0 24px 12px 24px;
+    padding: 0 24px 14px 24px;
     border: none !important;
     margin: 0 !important;
 }
 
-/*settings*/
-
 .niner-settings-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.35);
     z-index: 999999;
     display: flex;
     align-items: center;
@@ -452,11 +403,11 @@ td[xe-field="instructor"] {
 }
 
 .niner-settings-panel {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 22px;
     width: 260px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
     font-family: 'General-Sans', sans-serif;
 }
 
@@ -468,9 +419,9 @@ td[xe-field="instructor"] {
 }
 
 .niner-settings-title {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    color: rgba(0,0,0,0.7);
+    color: rgba(0, 0, 0, 0.75);
     letter-spacing: 0.05em;
     text-transform: uppercase;
 }
@@ -480,13 +431,16 @@ td[xe-field="instructor"] {
     border: none;
     cursor: pointer;
     font-size: 14px;
-    color: rgba(0,0,0,0.3);
+    color: rgba(0, 0, 0, 0.4);
     padding: 0;
+    line-height: 1;
+    margin: 0;
+    box-shadow: none;
     transition: color 0.15s;
 }
 
 .niner-settings-close:hover {
-    color: rgba(0,0,0,0.7);
+    color: rgba(0, 0, 0, 0.8);
 }
 
 .niner-settings-section {
@@ -500,7 +454,7 @@ td[xe-field="instructor"] {
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(0,0,0,0.25);
+    color: rgba(0, 0, 0, 0.4);
 }
 
 .niner-theme-options {
@@ -541,12 +495,12 @@ td[xe-field="instructor"] {
     padding: 8px 0;
     border-radius: 6px;
     border: 1.5px solid rgba(0,0,0,0.12);
-    background: #101820;
+    background: #0b120f;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     font-family: 'General-Sans', sans-serif;
-    color: rgba(0,0,0,0.5);
+    color: rgba(255,255,255,0.5);
     transition: all 0.15s;
 }
 
@@ -555,84 +509,77 @@ td[xe-field="instructor"] {
     color: #046A38;
 }
 
-.niner-theme-btn-white.niner-theme-btn-active {
-    outline: 2.5px solid #101820;
-    outline-offset: 2px;
-}
+.niner-theme-btn-white.niner-theme-btn-active { outline: 2.5px solid #101820; outline-offset: 2px; }
+.niner-theme-btn-dark.niner-theme-btn-active  { outline: 2.5px solid #ffffff; outline-offset: 2px; }
+.niner-theme-btn-green.niner-theme-btn-active { outline: 2.5px solid #ffffff; outline-offset: 2px; }
 
-.niner-theme-btn-dark.niner-theme-btn-active {
-    outline: 2.5px solid #ffffff;
-    outline-offset: 2px;
+.niner-theme-white { 
+    background: #ffffff; 
 }
-
-.niner-theme-btn-green.niner-theme-btn-active {
-    outline: 2.5px solid #ffffff;
-    outline-offset: 2px;
-}
-
-.niner-theme-white {
-    background: #ffffff;
-}
-
 .niner-theme-white .niner-prof { color: #046A38; }
-.niner-theme-white .niner-course { color: rgba(0,0,0,0.45); }
-.niner-theme-white .niner-modal-meeting { color: rgba(0,0,0,0.35); }
-.niner-theme-white .niner-divider { background: rgba(0,0,0,0.07); }
-.niner-theme-white .niner-section-label { color: rgba(0,0,0,0.25); }
-.niner-theme-white .niner-grade-placeholder { color: rgba(0,0,0,0.2); }
-.niner-theme-white .niner-link { color: #0021FF !important; }
-.niner-theme-white .niner-link-coursicle { color: #0B7BCE !important; }
+.niner-theme-white .niner-course { color: #2d3748; }            
+.niner-theme-white .niner-modal-meeting { color: #4a5568; }     
+.niner-theme-white .niner-divider { background: transparent !important; }
+.niner-theme-white .niner-section-label { color: #718096; }     
+.niner-theme-white .niner-grade-placeholder { color: #718096; }
+.niner-theme-white .niner-link { color: #1e4a9e !important; }   
+.niner-theme-white .niner-link-coursicle { color: #0c6196 !important; } 
 .niner-theme-white .niner-tray { background: #f2f2f2; }
-.niner-theme-white .niner-tray-empty { color: rgba(0,0,0,0.25); }
-.niner-theme-white .niner-tray-btn { color: rgba(0,0,0,0.4); }
+.niner-theme-white .niner-tray-empty { color: #718096; }
+.niner-theme-white .niner-tray-btn { color: #4a5568; }
+.niner-theme-white .niner-tray-btn:hover { color: #000000; background: rgba(0, 0, 0, 0.06); }
+.niner-theme-white .niner-tray-export { color: #046A38; }
+.niner-theme-white .niner-tray-export:hover { background: rgba(4, 106, 56, 0.08); }
 .niner-theme-white .niner-settings-btn,
-.niner-theme-white .niner-close-btn { color: rgba(0,0,0,0.3); }
-.niner-theme-white .niner-credit { color: rgba(0,0,0,0.15); }
+.niner-theme-white .niner-close-btn { color: #718096; }
+.niner-theme-white .niner-settings-btn:hover,
+.niner-theme-white .niner-close-btn:hover { color: #1a202c; }
+.niner-theme-white .niner-credit { color: #a0aec0; }
 
-.niner-theme-dark {
-    background: #101820;
+.niner-theme-dark { 
+    background: #101820; 
 }
-
 .niner-theme-dark .niner-prof { color: #ffffff; }
-.niner-theme-dark .niner-course { color: rgba(255,255,255,0.45); }
-.niner-theme-dark .niner-modal-meeting { color: rgba(255,255,255,0.35); }
-.niner-theme-dark .niner-divider { background: rgba(255,255,255,0.07); }
-.niner-theme-dark .niner-section-label { color: rgba(255,255,255,0.25); }
-.niner-theme-dark .niner-grade-placeholder { color: rgba(255,255,255,0.2); }
-.niner-theme-dark .niner-link { color: #7b9fff !important; }
-.niner-theme-dark .niner-link-coursicle { color: #5eb8ff !important; }
+.niner-theme-dark .niner-course { color: rgba(255, 255, 255, 0.88); } 
+.niner-theme-dark .niner-modal-meeting { color: rgba(255, 255, 255, 0.7); } 
+.niner-theme-dark .niner-divider { background: transparent !important; }
+.niner-theme-dark .niner-section-label { color: rgba(255, 255, 255, 0.5); }  
+.niner-theme-dark .niner-grade-placeholder { color: rgba(255, 255, 255, 0.45); }
+.niner-theme-dark .niner-link { color: #9bc5ff !important; }    
+.niner-theme-dark .niner-link-coursicle { color: #80d3ff !important; }
 .niner-theme-dark .niner-tray { background: #1e2a35; }
-.niner-theme-dark .niner-tray-empty { color: rgba(255,255,255,0.25); }
-.niner-theme-dark .niner-tray-btn { color: rgba(255,255,255,0.4); }
-.niner-theme-dark .niner-tray-btn:hover { color: white; background: rgba(255,255,255,0.08); }
+.niner-theme-dark .niner-tray-empty { color: rgba(255, 255, 255, 0.45); }
+.niner-theme-dark .niner-tray-btn { color: rgba(255, 255, 255, 0.4); }
+.niner-theme-dark .niner-tray-btn:hover { color: white; background: rgba(255, 255, 255, 0.08); }
 .niner-theme-dark .niner-tray-add { background: #046A38; }
+.niner-theme-dark .niner-tray-export { color: #48bb78; }
+.niner-theme-dark .niner-tray-export:hover { background: rgba(72, 187, 120, 0.12); }
 .niner-theme-dark .niner-settings-btn,
-.niner-theme-dark .niner-close-btn { color: rgba(255,255,255,0.3); }
+.niner-theme-dark .niner-close-btn { color: rgba(255, 255, 255, 0.45); }
 .niner-theme-dark .niner-settings-btn:hover,
-.niner-theme-dark .niner-close-btn:hover { color: rgba(255,255,255,0.8); }
-.niner-theme-dark .niner-credit { color: rgba(255,255,255,0.15); }
+.niner-theme-dark .niner-close-btn:hover { color: #ffffff; }
+.niner-theme-dark .niner-credit { color: rgba(255, 255, 255, 0.3); }
 
-.niner-theme-green {
-    background: #046A38;
+.niner-theme-green { 
+    background: #046A38; 
 }
-
 .niner-theme-green .niner-prof { color: #ffffff; }
-.niner-theme-green .niner-course { color: rgba(255,255,255,0.6); }
-.niner-theme-green .niner-modal-meeting { color: rgba(255,255,255,0.5); }
-.niner-theme-green .niner-divider { background: rgba(255,255,255,0.15); }
-.niner-theme-green .niner-section-label { color: rgba(255,255,255,0.4); }
-.niner-theme-green .niner-grade-placeholder { color: rgba(255,255,255,0.3); }
-.niner-theme-green .niner-link { color: rgba(255,255,255,0.9) !important; }
-.niner-theme-green .niner-link-coursicle { color: rgba(255,255,255,0.9) !important; }
+.niner-theme-green .niner-course { color: #ffffff; }
+.niner-theme-green .niner-modal-meeting { color: rgba(255, 255, 255, 0.85); } 
+.niner-theme-green .niner-divider { background: transparent !important; }
+.niner-theme-green .niner-section-label { color: rgba(255, 255, 255, 0.65); } 
+.niner-theme-green .niner-grade-placeholder { color: rgba(255, 255, 255, 0.55); }
+.niner-theme-green .niner-link { color: #ffffff !important; font-weight: 700; } 
+.niner-theme-green .niner-link-coursicle { color: #ffffff !important; font-weight: 700; }
 .niner-theme-green .niner-tray { background: #035a2f; }
-.niner-theme-green .niner-tray-empty { color: rgba(255,255,255,0.3); }
-.niner-theme-green .niner-tray-btn { color: rgba(255,255,255,0.5); }
-.niner-theme-green .niner-tray-btn:hover { color: white; background: rgba(255,255,255,0.1); }
-.niner-theme-green .niner-tray-add { background: rgba(255,255,255,0.15); color: white; }
-.niner-theme-green .niner-tray-add:hover { background: rgba(255,255,255,0.25); }
-.niner-theme-green .niner-tray-export { color: white; }
+.niner-theme-green .niner-tray-empty { color: rgba(255, 255, 255, 0.55); }
+.niner-theme-green .niner-tray-btn { color: rgba(255, 255, 255, 0.5); }
+.niner-theme-green .niner-tray-btn:hover { color: white; background: rgba(255, 255, 255, 0.12); }
+.niner-theme-green .niner-tray-add { background: rgba(255, 255, 255, 0.15); color: #ffffff; }
+.niner-theme-green .niner-tray-add:hover { background: rgba(255, 255, 255, 0.25); }
+.niner-theme-green .niner-tray-export { color: #ffffff; }
 .niner-theme-green .niner-settings-btn,
-.niner-theme-green .niner-close-btn { color: rgba(255,255,255,0.5); }
+.niner-theme-green .niner-close-btn { color: rgba(255, 255, 255, 0.7); }
 .niner-theme-green .niner-settings-btn:hover,
-.niner-theme-green .niner-close-btn:hover { color: white; }
-.niner-theme-green .niner-credit { color: rgba(255,255,255,0.2); }
+.niner-theme-green .niner-close-btn:hover { color: #ffffff; }
+.niner-theme-green .niner-credit { color: rgba(255, 255, 255, 0.4); }

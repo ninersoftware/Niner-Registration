@@ -94,7 +94,7 @@ async function queryRMP(name) {
     const cacheKey = `rmp_${CACHE_VERSION}_${resolvedName.toLowerCase().trim()}`;
     const stored = await chrome.storage.local.get(cacheKey);
     const cached = stored[cacheKey];
-
+    console.log('cache check for', name, '-- hit:', !!cached);
     if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
         return cached.data;
     }
