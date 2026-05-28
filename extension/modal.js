@@ -24,7 +24,6 @@ function openSettings(currentModal) {
 
     document.body.appendChild(settings);
 
-    // mark active theme
     chrome.storage.local.get('ninerTheme', (result) => {
         const current = result.ninerTheme || 'white';
         settings.querySelectorAll('[data-theme]').forEach(btn => {
@@ -34,7 +33,6 @@ function openSettings(currentModal) {
         });
     });
 
-    // theme selection
     settings.querySelectorAll('[data-theme]').forEach(btn => {
         btn.addEventListener('click', () => {
             const theme = btn.getAttribute('data-theme');
@@ -54,7 +52,7 @@ function applyTheme(modalContainer, theme) {
     modalContainer.classList.add(`niner-theme-${theme}`);
 }
 
-function renderTray(trayCoursesEL, courses) {
+function renderTray(trayCoursesEL, courses, onRemove) {
     trayCoursesEL.innerHTML = '';
 
     if (courses.length === 0) {
@@ -65,9 +63,16 @@ function renderTray(trayCoursesEL, courses) {
     courses.forEach((course, index) => {
         const chip = document.createElement('div');
         chip.className = 'niner-tray-chip';
-        chip.innerHTML = `${course.subject} ${course.courseNumber}`;
+        chip.innerHTML = `
+            <span class="niner-tray-chip-label">${course.subject} ${course.courseNumber}</span>
+            <button class="niner-tray-chip-remove">✕</button>
+        
+        `;
+        chip.querySelector('.niner-tray-chip-remove').addEventListener('click', () => {
+            onRemove(index);
+        });
         trayCoursesEL.appendChild(chip);
-    })
+    });
 }
 
 function openModal(clickedElement, rmpData) {
@@ -91,6 +96,25 @@ function openModal(clickedElement, rmpData) {
         const theme = result.ninerTheme || 'white';
         applyTheme(modalContainer, theme);
     });
+
+    const removeAtIndex = (index) => {
+        chrome.storage.local.get('ninerQueue', (result) => {
+            const queue = result.ninerQueue || [];
+            const newQueue = queue.filter((_, i) => i !== index);
+            chrome.storage.local.set({ ninerQueue: newQueue });
+            renderTray(trayCoursesEL, newQueue, removeAtIndex);
+
+            const stillAdded = newQueue.some(c =>
+                c.subject === courseData.subject &&
+                c.courseNumber === courseData.courseNumber
+            );
+            if (!stillAdded) {
+                addBtn.textContent ='+ Add';
+                addBtn.style.background = '#046A38';
+            }
+        });
+    }
+
 
     const meetingLines = courseData.meetings.map(m => {
         const days = m.days.map(d => d.slice(0,3)).join('/');
@@ -135,7 +159,7 @@ function openModal(clickedElement, rmpData) {
                 <span class="niner-tray-empty"> Add courses to build your calendar export</span>
             </div>
             <div class="niner-tray-actions">
-                <button class="niner-tray-btn niner-tray-undo">↩</button>
+                <button class="niner-tray-btn niner-tray-undo">Clear</button>
                 <button class="niner-tray-btn niner-tray-export">⬇ .ics</button>
             </div>
         </div>
@@ -166,7 +190,7 @@ function openModal(clickedElement, rmpData) {
 
     chrome.storage.local.get('ninerQueue', (result) => {
         const queue = result.ninerQueue || [];
-        renderTray(trayCoursesEL, queue);
+        renderTray(trayCoursesEL, queue, removeAtIndex);
 
         const alreadyAdded = queue.some(c =>
             c.subject === courseData.subject &&
@@ -193,7 +217,7 @@ function openModal(clickedElement, rmpData) {
                   c.courseNumber === courseData.courseNumber)
             );
             chrome.storage.local.set({ ninerQueue: newQueue });
-            renderTray(trayCoursesEL, newQueue);
+            renderTray(trayCoursesEL, newQueue, removeAtIndex);
             addBtn.textContent = '+ Add';
             addBtn.style.background = '#046A38';
         } else {
@@ -206,41 +230,28 @@ function openModal(clickedElement, rmpData) {
             };
             const newQueue = [...queue, courseToSave];
             chrome.storage.local.set({ ninerQueue: newQueue });
-            renderTray(trayCoursesEL, newQueue);
+            renderTray(trayCoursesEL, newQueue, removeAtIndex);
             addBtn.textContent = '✓ Added';
             addBtn.style.background = '#035a2f';
         }
     });
 });
 
-    undoBtn.addEventListener('click', () => {
-    chrome.storage.local.get('ninerQueue', (result) => {
-        const queue = result.ninerQueue || [];
-        if (queue.length === 0) return;
-
-        const newQueue = queue.slice(0, -1);
-        chrome.storage.local.set({ ninerQueue: newQueue });
-        renderTray(trayCoursesEL, newQueue);
-
-        const stillAdded = newQueue.some(c =>
-            c.subject === courseData.subject &&
-            c.courseNumber === courseData.courseNumber
-        );
-        if (!stillAdded) {
-            addBtn.textContent = '+ Add';
-            addBtn.style.background = '#046A38';
-        }
-    });
+undoBtn.addEventListener('click', () => {
+    chrome.storage.local.set({ ninerQueue: [] });
+    renderTray(trayCoursesEL, [], removeAtIndex);
+    addBtn.textContent = '+ Add';
+    addBtn.style.background = '#046A38';
 });
 
-    exportBtn.addEventListener('click', () => {
+exportBtn.addEventListener('click', () => {
     chrome.storage.local.get('ninerQueue', (result) => {
         const queue = result.ninerQueue || [];
         if (queue.length === 0) return;
         exportToICS(queue);
     });
 });
-} 
+}
 
 function parseCourseRow(clickedElement) {
     const row = clickedElement.closest('tr');
