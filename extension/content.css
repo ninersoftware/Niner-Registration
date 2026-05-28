@@ -51,7 +51,6 @@
     box-sizing: border-box;
 }
 
-/* FIX 1: Invisible Hover Bridge to eliminate the hover gap */
 .professor-stats::before {
     content: '';
     position: absolute;
@@ -207,26 +206,30 @@ td[xe-field="instructor"] {
     line-height: 1.3;
 }
 
-/* FIX 2: Increased specificity using .professor-stats parent container wrapping */
 .professor-stats .tooltip-btn-rmp {
-    background: rgba(128, 128, 128, 0.25) !important;
+    background: rgba(255,255,255,0.12) !important;
     color: #ffffff !important;
 }
 
-.professor-stats .tooltip-btn-rmp:hover {
-    background: rgba(128, 128, 128, 0.4) !important;
+.professor-stats .tooltip-btn-rmp:link,
+.professor-stats .tooltip-btn-rmp:visited,
+.professor-stats .tooltip-btn-rmp:hover,
+.professor-stats .tooltip-btn-rmp:active {
+    color: #ffffff !important;
+    background: rgba(255,255,255,0.2) !important;
+    text-decoration: none !important;
 }
 
 .professor-stats .tooltip-btn-detail {
     background: #046A38 !important;
-    color: white !important;
+    color: #ffffff !important;
 }
 
 .professor-stats .tooltip-btn-detail:hover {
     background: #035a2f !important;
+    color: #ffffff !important;
 }
 
-/* Remaining styles preserved exactly as provided */
 .niner-modal-overlay {
     position: fixed;
     inset: 0;

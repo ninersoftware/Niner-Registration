@@ -28,6 +28,29 @@ function applyTooltipTheme(stats, theme) {
     if (header) header.style.borderBottomColor = borderColor;
     if (lastReview) lastReview.style.color = lastReviewColor;
     details.forEach(s => s.style.color = textColor);
+
+    const rmpBtn = stats.querySelector('.tooltip-btn-rmp');
+    const detailBtn = stats.querySelector('.tooltip-btn-detail');
+
+    if (isLight) {
+        if (rmpBtn) {
+            rmpBtn.style.setProperty('background', 'rgba(0,0,0,0.08)', 'important');
+            rmpBtn.style.setProperty('color', '#1a1a1a', 'important');
+        }
+        if (detailBtn) {
+            detailBtn.style.setProperty('background', '#046A38', 'important');
+            detailBtn.style.setProperty('color', '#ffffff', 'important');
+        }
+    } else {
+        if (rmpBtn) {
+            rmpBtn.style.setProperty('background', 'rgba(255,255,255,0.12)', 'important');
+            rmpBtn.style.setProperty('color', '#ffffff', 'important');
+        }
+        if (detailBtn) {
+            detailBtn.style.setProperty('background', '#046A38', 'important');
+            detailBtn.style.setProperty('color', '#ffffff', 'important');
+        }
+    }
 }
 
 function injectOverview(cell, data, originalName) {
