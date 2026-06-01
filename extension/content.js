@@ -34,7 +34,7 @@ function applyTooltipTheme(stats, theme) {
 
     if (calBtn) calBtn.style.setProperty('color', isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.6)', 'important');
     if (expandBtn) expandBtn.style.setProperty('color', isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.6)', 'important');
-    }
+}
 
 function injectOverview(cell, data, originalName) {
     const overview = document.createElement('div');
@@ -48,6 +48,8 @@ function injectOverview(cell, data, originalName) {
         : `${Math.round(data.wouldTakeAgainPercent)}%`;
     const lowRatings = data.numRatings < 10;
 
+    const calendarIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>`;
+
     overview.innerHTML = `
     <span class="professor-name" style="cursor:pointer;">
         <span class="rating-dot" style="background:${ratingColor}"></span>
@@ -56,8 +58,7 @@ function injectOverview(cell, data, originalName) {
     <div class="professor-stats">
         <div class="professor-topbar">
             <button class="tooltip-cal-btn" title="Add to calendar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
-                Add
+                ${calendarIconSvg} Add
             </button>
             <button class="tooltip-expand-btn" title="Detailed view">⤢</button>
         </div>
@@ -116,7 +117,7 @@ function injectOverview(cell, data, originalName) {
                     meetings: courseData.meetings
                 };
                 chrome.storage.local.set({ ninerQueue: [...queue, courseToSave] });
-                calBtn.style.color = '#046A38';
+                calBtn.innerHTML = `${calendarIconSvg} ✓ Added`;
                 calBtn.title = 'Added to calendar';
             } else {
                 const newQueue = queue.filter(c =>
@@ -124,7 +125,7 @@ function injectOverview(cell, data, originalName) {
                     c.courseNumber === courseData.courseNumber)
                 );
                 chrome.storage.local.set({ ninerQueue: newQueue });
-                calBtn.style.color = '';
+                calBtn.innerHTML = `${calendarIconSvg} Add`;
                 calBtn.title = 'Add to calendar';
             }
         });
@@ -137,7 +138,7 @@ function injectOverview(cell, data, originalName) {
             c.subject === courseData.subject &&
             c.courseNumber === courseData.courseNumber
         )) {
-            calBtn.style.color = '#046A38';
+            calBtn.innerHTML = `${calendarIconSvg} ✓ Added`;
             calBtn.title = 'Added to calendar';
         }
     });
@@ -164,6 +165,9 @@ function injectOverview(cell, data, originalName) {
 function injectNotFound(cell, name) {
     const overview = document.createElement('div');
     overview.className = 'professor-container';
+    
+    const calendarIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>`;
+
     overview.innerHTML = `
     <span class="professor-name-plain">
         <span class="rating-dot" style="background:#666"></span>
@@ -172,8 +176,7 @@ function injectNotFound(cell, name) {
     <div class="professor-stats">
         <div class="professor-topbar">
             <button class="tooltip-cal-btn" title="Add to calendar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
-                Add
+                ${calendarIconSvg} Add
             </button>
             <button class="tooltip-expand-btn" title="Detailed view">⤢</button>
         </div>
@@ -220,16 +223,30 @@ function injectNotFound(cell, name) {
                     meetings: courseData.meetings
                 };
                 chrome.storage.local.set({ ninerQueue: [...queue, courseToSave] });
-                calBtn.style.color = '#046A38';
+                calBtn.innerHTML = `${calendarIconSvg} ✓ Added`;
+                calBtn.title = 'Added to calendar';
             } else {
                 const newQueue = queue.filter(c =>
                     !(c.subject === courseData.subject &&
                     c.courseNumber === courseData.courseNumber)
                 );
                 chrome.storage.local.set({ ninerQueue: newQueue });
-                calBtn.style.color = '';
+                calBtn.innerHTML = `${calendarIconSvg} Add`;
+                calBtn.title = 'Add to calendar';
             }
         });
+    });
+
+    chrome.storage.local.get('ninerQueue', (result) => {
+        const queue = result.ninerQueue || [];
+        const courseData = parseCourseRow(overview);
+        if (courseData && queue.some(c =>
+            c.subject === courseData.subject &&
+            c.courseNumber === courseData.courseNumber
+        )) {
+            calBtn.innerHTML = `${calendarIconSvg} ✓ Added`;
+            calBtn.title = 'Added to calendar';
+        }
     });
 
     chrome.storage.local.get('ninerTheme', (result) => {
@@ -287,7 +304,7 @@ chrome.storage.local.onChanged.addListener((changes) => {
     if (changes.ninerTheme) {
         const theme = changes.ninerTheme.newValue || 'white';
         document.querySelectorAll('.professor-stats').forEach(stats => {
-            applyTooltipTheme(stats, theme);
+            applyTheme(stats, theme); // Corrected callback helper name
         });
     }
 });

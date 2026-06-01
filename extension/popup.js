@@ -82,7 +82,6 @@ document.getElementById('cal-export').addEventListener('click', () => {
     });
 });
 
-// Theme swatches
 function updateSwatches(theme) {
     document.querySelectorAll('.theme-swatch').forEach(s => {
         s.classList.remove('active-white', 'active-dark', 'active-green');

@@ -66,7 +66,6 @@ function renderTray(trayCoursesEL, courses, onRemove) {
         chip.innerHTML = `
             <span class="niner-tray-chip-label">${course.subject} ${course.courseNumber}</span>
             <button class="niner-tray-chip-remove">✕</button>
-        
         `;
         chip.querySelector('.niner-tray-chip-remove').addEventListener('click', () => {
             onRemove(index);
@@ -82,7 +81,6 @@ function openModal(clickedElement, rmpData) {
     }
 
     const courseData = parseCourseRow(clickedElement);
-
     const profName = clickedElement.textContent.trim().replace('↗', '').trim();
 
     const overlay = document.createElement('div');
@@ -90,7 +88,6 @@ function openModal(clickedElement, rmpData) {
     overlay.className = 'niner-modal-overlay';
 
     const modalContainer = document.createElement('div');
-
     modalContainer.className = 'niner-modal-container';
     chrome.storage.local.get('ninerTheme', (result) => {
         const theme = result.ninerTheme || 'white';
@@ -109,12 +106,11 @@ function openModal(clickedElement, rmpData) {
                 c.courseNumber === courseData.courseNumber
             );
             if (!stillAdded) {
-                addBtn.textContent ='+ Add';
+                addBtn.textContent = '+ Add';
                 addBtn.style.background = '#046A38';
             }
         });
     }
-
 
     const meetingLines = courseData.meetings.map(m => {
         const days = m.days.map(d => d.slice(0,3)).join('/');
@@ -170,11 +166,10 @@ function openModal(clickedElement, rmpData) {
     overlay.appendChild(modalContainer);
     document.body.appendChild(overlay);
 
-
     modalContainer.querySelector('.niner-close-btn').addEventListener('click', () => overlay.remove());
 
     modalContainer.querySelector('.niner-settings-btn').addEventListener('click', () => {
-    openSettings(modalContainer);
+        openSettings(modalContainer);
     });
 
     overlay.addEventListener('click', (event) => {
@@ -182,7 +177,7 @@ function openModal(clickedElement, rmpData) {
             overlay.remove();
         }
     });
-       
+        
     const trayCoursesEL = modalContainer.querySelector('.niner-tray-courses');
     const addBtn = modalContainer.querySelector('.niner-tray-add');
     const undoBtn = modalContainer.querySelector('.niner-tray-undo');
@@ -203,54 +198,54 @@ function openModal(clickedElement, rmpData) {
     });
 
     addBtn.addEventListener('click', () => {
-    chrome.storage.local.get('ninerQueue', (result) => {
-        const queue = result.ninerQueue || [];
+        chrome.storage.local.get('ninerQueue', (result) => {
+            const queue = result.ninerQueue || [];
 
-        const alreadyAdded = queue.some(c =>
-            c.subject === courseData.subject &&
-            c.courseNumber === courseData.courseNumber
-        );
-
-        if (alreadyAdded) {
-            const newQueue = queue.filter(c =>
-                !(c.subject === courseData.subject &&
-                  c.courseNumber === courseData.courseNumber)
+            const alreadyAdded = queue.some(c =>
+                c.subject === courseData.subject &&
+                c.courseNumber === courseData.courseNumber
             );
-            chrome.storage.local.set({ ninerQueue: newQueue });
-            renderTray(trayCoursesEL, newQueue, removeAtIndex);
-            addBtn.textContent = '+ Add';
-            addBtn.style.background = '#046A38';
-        } else {
-            const courseToSave = {
-                subject: courseData.subject,
-                courseNumber: courseData.courseNumber,
-                title: courseData.title,
-                credits: courseData.credits,
-                meetings: courseData.meetings
-            };
-            const newQueue = [...queue, courseToSave];
-            chrome.storage.local.set({ ninerQueue: newQueue });
-            renderTray(trayCoursesEL, newQueue, removeAtIndex);
-            addBtn.textContent = '✓ Added';
-            addBtn.style.background = '#035a2f';
-        }
-    });
-});
 
-undoBtn.addEventListener('click', () => {
-    chrome.storage.local.set({ ninerQueue: [] });
-    renderTray(trayCoursesEL, [], removeAtIndex);
-    addBtn.textContent = '+ Add';
-    addBtn.style.background = '#046A38';
-});
-
-exportBtn.addEventListener('click', () => {
-    chrome.storage.local.get('ninerQueue', (result) => {
-        const queue = result.ninerQueue || [];
-        if (queue.length === 0) return;
-        exportToICS(queue);
+            if (alreadyAdded) {
+                const newQueue = queue.filter(c =>
+                    !(c.subject === courseData.subject &&
+                      c.courseNumber === courseData.courseNumber)
+                );
+                chrome.storage.local.set({ ninerQueue: newQueue });
+                renderTray(trayCoursesEL, newQueue, removeAtIndex);
+                addBtn.textContent = '+ Add';
+                addBtn.style.background = '#046A38';
+            } else {
+                const courseToSave = {
+                    subject: courseData.subject,
+                    courseNumber: courseData.courseNumber,
+                    title: courseData.title,
+                    credits: courseData.credits,
+                    meetings: courseData.meetings
+                };
+                const newQueue = [...queue, courseToSave];
+                chrome.storage.local.set({ ninerQueue: newQueue });
+                renderTray(trayCoursesEL, newQueue, removeAtIndex);
+                addBtn.textContent = '✓ Added';
+                addBtn.style.background = '#035a2f';
+            }
+        });
     });
-});
+
+    undoBtn.addEventListener('click', () => {
+        chrome.storage.local.set({ ninerQueue: [] });
+        renderTray(trayCoursesEL, [], removeAtIndex);
+        addBtn.textContent = '+ Add';
+        addBtn.style.background = '#046A38';
+    });
+
+    exportBtn.addEventListener('click', () => {
+        chrome.storage.local.get('ninerQueue', (result) => {
+            const queue = result.ninerQueue || [];
+            if (queue.length === 0) return;
+            exportToICS(queue);
+        });
+    });
 }
 
 function parseCourseRow(clickedElement) {
@@ -291,9 +286,9 @@ function parseCourseRow(clickedElement) {
         const endDate = tooltipRows.find(r => r.textContent.includes('End Date'))
             ?.textContent.replace('End Date:', '').trim() || '';
         
-            if (days.length > 0) {
-                meetings.push({ days, time, building, room, startDate, endDate});
-            }
+        if (days.length > 0) {
+            meetings.push({ days, time, building, room, startDate, endDate});
+        }
     });
 
     return {

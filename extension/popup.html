@@ -3,24 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <style>
+        @font-face {
+        font-family: 'General-Sans';
+        src: url(chrome-extension://__MSG_@@extension_id__/fonts/GeneralSans-Regular.woff);
+        font-weight: 400;
+        }
+        @font-face {
+            font-family: 'General-Sans';
+            src: url(chrome-extension://__MSG_@@extension_id__/fonts/GeneralSans-Medium.woff);
+            font-weight: 500;
+        }
+        @font-face {
+            font-family: 'General-Sans';
+            src: url(chrome-extension://__MSG_@@extension_id__/fonts/GeneralSans-Semibold.woff);
+            font-weight: 600;
+        }
+        @font-face {
+            font-family: 'General-Sans';
+            src: url(chrome-extension://__MSG_@@extension_id__/fonts/GeneralSans-Bold.woff);
+            font-weight: 700;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             width: 320px;
-            font-family: 'General-Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'General-Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #ffffff;
-            color: #1a1a1a;
+            color: #101820;
+            display: flex;
+            flex-direction: column;
         }
 
         .popup-header {
-            padding: 16px 18px 0 18px;
+            padding: 16px 16px 0 16px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .popup-logo {
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #046A38;
         }
 
         .popup-title {
@@ -32,20 +57,21 @@
 
         .popup-version {
             font-size: 10px;
-            color: rgba(0,0,0,0.3);
+            font-weight: 500;
+            color: rgba(0,0,0,0.25);
             margin-left: auto;
         }
 
         .popup-tabs {
             display: flex;
-            padding: 12px 18px 0 18px;
-            gap: 0;
-            border-bottom: 1px solid rgba(0,0,0,0.08);
-            margin-top: 12px;
+            padding: 12px 16px 0 16px;
+            gap: 4px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            margin-top: 8px;
         }
 
         .popup-tab {
-            padding: 6px 14px;
+            padding: 6px 12px;
             font-size: 12px;
             font-weight: 600;
             color: rgba(0,0,0,0.4);
@@ -69,19 +95,26 @@
 
         .tab-content {
             display: none;
-            padding: 16px 18px;
+            padding: 14px 16px;
         }
 
         .tab-content.active {
-            display: block;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #tab-settings {
+            background: #ffffff !important;
+            color: #101820 !important;
         }
 
         .cal-empty {
-            font-size: 12px;
-            color: rgba(0,0,0,0.35);
+            font-size: 11px;
+            color: rgba(0,0,0,0.4);
             font-style: italic;
             text-align: center;
-            padding: 20px 0;
+            padding: 30px 0;
+            line-height: 1.4;
         }
 
         .cal-course-list {
@@ -97,8 +130,9 @@
             justify-content: space-between;
             padding: 8px 10px;
             background: #f6fbf8;
-            border: 1px solid rgba(4,106,56,0.15);
+            border: 1px solid rgba(4,106,56,0.12);
             border-radius: 6px;
+            transition: all 0.15s;
         }
 
         .cal-course-info {
@@ -114,7 +148,8 @@
         }
 
         .cal-course-time {
-            font-size: 11px;
+            font-size: 10px;
+            font-weight: 500;
             color: rgba(0,0,0,0.45);
         }
 
@@ -125,7 +160,7 @@
             color: rgba(0,0,0,0.25);
             font-size: 12px;
             padding: 2px 4px;
-            border-radius: 3px;
+            border-radius: 4px;
             transition: all 0.15s;
         }
 
@@ -157,7 +192,7 @@
         }
 
         .cal-btn-clear:hover {
-            background: rgba(0,0,0,0.1);
+            background: rgba(0,0,0,0.08);
             color: rgba(0,0,0,0.8);
         }
 
@@ -173,7 +208,7 @@
         .settings-section {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
 
         .settings-group {
@@ -185,9 +220,9 @@
         .settings-group-label {
             font-size: 10px;
             font-weight: 700;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            color: rgba(0,0,0,0.35);
+            color: rgba(0,0,0,0.4);
         }
 
         .theme-options {
@@ -197,7 +232,7 @@
 
         .theme-swatch {
             flex: 1;
-            height: 32px;
+            height: 28px;
             border-radius: 6px;
             border: 2px solid transparent;
             cursor: pointer;
@@ -208,23 +243,55 @@
         .theme-swatch-dark  { background: #101820; }
         .theme-swatch-green { background: #046A38; }
 
-        .theme-swatch.active-white { border-color: #101820; outline: none; }
-        .theme-swatch.active-dark  { border-color: #ffffff; box-shadow: 0 0 0 1px #101820; }
-        .theme-swatch.active-green { border-color: #ffffff; box-shadow: 0 0 0 1px #046A38; }
+        .theme-swatch-white.active-white {
+            outline: 2px solid #046A38;
+            outline-offset: 2px;
+            border-color: #ffffff;
+        }
+
+        .theme-swatch-dark.active-dark {
+            outline: 2px solid #ffffff;
+            outline-offset: 2px;
+            border-color: #101820;
+        }
+
+        .theme-swatch-green.active-green {
+            outline: 2px solid #ffffff;
+            outline-offset: 2px;
+            border-color: #046A38;
+        }
+
+        body.theme-dark #tab-calendar { background: #101820; color: #ffffff; }
+        body.theme-dark #tab-calendar .cal-empty { color: rgba(255,255,255,0.4); }
+        body.theme-dark #tab-calendar .cal-course-item { background: #1e2a35; border-color: rgba(255,255,255,0.08); }
+        body.theme-dark #tab-calendar .cal-course-name { color: #ffffff; }
+        body.theme-dark #tab-calendar .cal-course-time { color: rgba(255,255,255,0.5); }
+        body.theme-dark #tab-calendar .cal-btn-clear { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+        body.theme-dark #tab-calendar .cal-btn-clear:hover { background: rgba(255,255,255,0.12); color: #ffffff; }
+
+        body.theme-green #tab-calendar { background: #046A38; color: #ffffff; }
+        body.theme-green #tab-calendar .cal-empty { color: rgba(255,255,255,0.5); }
+        body.theme-green #tab-calendar .cal-course-item { background: #035a2f; border-color: rgba(255,255,255,0.1); }
+        body.theme-green #tab-calendar .cal-course-name { color: #ffffff; }
+        body.theme-green #tab-calendar .cal-course-time { color: rgba(255,255,255,0.6); }
+        body.theme-green #tab-calendar .cal-btn-clear { background: rgba(255,255,255,0.12); color: #ffffff; }
+        body.theme-green #tab-calendar .cal-btn-clear:hover { background: rgba(255,255,255,0.2); }
+        body.theme-green #tab-calendar .cal-btn-export { background: #ffffff; color: #046A38; }
+        body.theme-green #tab-calendar .cal-btn-export:hover { background: rgba(255,255,255,0.9); }
 
         .popup-footer {
-            padding: 10px 18px 14px 18px;
-            border-top: 1px solid rgba(0,0,0,0.06);
+            padding: 10px 16px 14px 16px;
+            border-top: 1px solid rgba(0,0,0,0.04);
             font-size: 9px;
             font-style: italic;
             color: rgba(0,0,0,0.2);
             text-align: right;
+            background: #ffffff;
         }
     </style>
 </head>
-<body>
+<body class="theme-white">
     <div class="popup-header">
-        <span class="popup-logo">⛏</span>
         <span class="popup-title">Niner Registration</span>
         <span class="popup-version">v2.0</span>
     </div>
@@ -240,14 +307,14 @@
         </div>
         <div class="cal-actions" id="cal-actions" style="display:none;">
             <button class="cal-btn cal-btn-clear" id="cal-clear">Clear All</button>
-            <button class="cal-btn cal-btn-export" id="cal-export">⬇ Export .ics</button>
+            <button class="cal-btn cal-btn-export" id="cal-export">Export .ics</button>
         </div>
     </div>
 
     <div class="tab-content" id="tab-settings">
         <div class="settings-section">
             <div class="settings-group">
-                <div class="settings-group-label">Theme</div>
+                <div class="settings-group-label">Themes (reload after selecting)</div>
                 <div class="theme-options">
                     <button class="theme-swatch theme-swatch-white" data-theme="white"></button>
                     <button class="theme-swatch theme-swatch-dark" data-theme="dark"></button>
