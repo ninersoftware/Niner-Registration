@@ -34,21 +34,25 @@ function applyTooltipTheme(stats, theme) {
 
     if (isLight) {
         if (rmpBtn) {
-            rmpBtn.style.setProperty('background', 'rgba(0,0,0,0.08)', 'important');
             rmpBtn.style.setProperty('color', '#1a1a1a', 'important');
+            rmpBtn.onmouseenter = () => rmpBtn.style.setProperty('background', 'rgba(0,0,0,0.06)', 'important');
+            rmpBtn.onmouseleave = () => rmpBtn.style.setProperty('background', 'transparent', 'important');
         }
         if (detailBtn) {
-            detailBtn.style.setProperty('background', '#046A38', 'important');
-            detailBtn.style.setProperty('color', '#ffffff', 'important');
+            detailBtn.style.setProperty('color', '#1a1a1a', 'important');
+            detailBtn.onmouseenter = () => detailBtn.style.setProperty('background', 'rgba(0,0,0,0.06)', 'important');
+            detailBtn.onmouseleave = () => detailBtn.style.setProperty('background', 'transparent', 'important');
         }
     } else {
         if (rmpBtn) {
-            rmpBtn.style.setProperty('background', 'rgba(255,255,255,0.12)', 'important');
             rmpBtn.style.setProperty('color', '#ffffff', 'important');
+            rmpBtn.onmouseenter = () => rmpBtn.style.setProperty('background', 'rgba(255,255,255,0.12)', 'important');
+            rmpBtn.onmouseleave = () => rmpBtn.style.setProperty('background', 'transparent', 'important');
         }
         if (detailBtn) {
-            detailBtn.style.setProperty('background', '#046A38', 'important');
             detailBtn.style.setProperty('color', '#ffffff', 'important');
+            detailBtn.onmouseenter = () => detailBtn.style.setProperty('background', 'rgba(255,255,255,0.12)', 'important');
+            detailBtn.onmouseleave = () => detailBtn.style.setProperty('background', 'transparent', 'important');
         }
     }
 }
@@ -66,32 +70,35 @@ function injectOverview(cell, data, originalName) {
     const lowRatings = data.numRatings < 10;
 
     overview.innerHTML = `
-        <span class="professor-name" style="cursor:pointer;">
-            <span class="rating-dot" style="background:${ratingColor}"></span>
-            ${originalName} ↗
-        </span>
-        <div class="professor-stats">
-            <div class="professor-header">
-                <span class="professor-full-name"><strong>${data.firstName} ${data.lastName}</strong></span>
+    <span class="professor-name" style="cursor:pointer;">
+        <span class="rating-dot" style="background:${ratingColor}"></span>
+        ${originalName} ↗
+    </span>
+    <div class="professor-stats">
+        <div class="professor-topbar">
+            <button class="tooltip-cal-btn" title="Add to calendar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+                Add
+            </button>
+            <button class="tooltip-expand-btn" title="Detailed view">⤢</button>
+        </div>
+        <div class="professor-header">
+            <span class="professor-full-name"><strong>${data.firstName} ${data.lastName}</strong></span>
+        </div>
+        <div class="professor-row">
+            <div class="rating-box" style="background:${ratingColor}">
+                <span class="rating-number">${data.avgRating}</span>
+                <span class="rating-label">/ 5</span>
             </div>
-            <div class="professor-row">
-                <div class="rating-box" style="background:${ratingColor}">
-                    <span class="rating-number">${data.avgRating}</span>
-                    <span class="rating-label">/ 5</span>
-                </div>
-                <div class="rating-details">
-                    <span>Difficulty: <strong>${data.avgDifficulty}</strong></span>
-                    <span><strong>${wouldTakeAgain}</strong> would take again</span>
-                    <span><strong>${data.numRatings}</strong> ratings</span>
-                </div>
-            </div>
-            ${lowRatings ? `<span class="low-ratings-warning"><strong>⚠️ Low rating count</strong></span>` : ''}
-            ${lastReview ? `<span class="last-review"><strong>Last reviewed: <em>${lastReview}</em></strong></span>` : ''}
-            <div class="tooltip-actions">
-                <a class="tooltip-btn tooltip-btn-rmp" href="https://www.ratemyprofessors.com/professor/${data.legacyId}" target="_blank">RateMyProfessors ↗</a>
-                <button class="tooltip-btn tooltip-btn-detail">Detailed View ⤢</button>
+            <div class="rating-details">
+                <span>Difficulty: <strong>${data.avgDifficulty}</strong></span>
+                <span><strong>${wouldTakeAgain}</strong> would take again</span>
+                <span><strong>${data.numRatings}</strong> ratings</span>
             </div>
         </div>
+        ${lowRatings ? `<span class="low-ratings-warning"><strong>⚠️ Low rating count</strong></span>` : ''}
+        ${lastReview ? `<span class="last-review"><strong>Last reviewed: <em>${lastReview}</em></strong></span>` : ''}
+    </div>
     `;
 
     cell.innerHTML = '';
@@ -134,27 +141,30 @@ function injectNotFound(cell, name) {
     const overview = document.createElement('div');
     overview.className = 'professor-container';
     overview.innerHTML = `
-        <span class="professor-name-plain">
-            <span class="rating-dot" style="background:#666"></span>
-            ${name} ↗
-        </span>
-        <div class="professor-stats">
-            <div class="professor-header">
-                <span class="professor-full-name"><strong>${name}</strong></span>
+    <span class="professor-name-plain">
+        <span class="rating-dot" style="background:#666"></span>
+        ${name} ↗
+    </span>
+    <div class="professor-stats">
+        <div class="professor-topbar">
+            <button class="tooltip-cal-btn" title="Add to calendar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+                Add
+            </button>
+            <button class="tooltip-expand-btn" title="Detailed view">⤢</button>
+        </div>
+        <div class="professor-header">
+            <span class="professor-full-name"><strong>${name}</strong></span>
+        </div>
+        <div class="professor-row">
+            <div class="rating-box" style="background:#666">
+                <span class="rating-number">N/A</span>
             </div>
-            <div class="professor-row">
-                <div class="rating-box" style="background:#666">
-                    <span class="rating-number">N/A</span>
-                </div>
-                <div class="rating-details">
-                    <span>No RMP data found</span>
-                </div>
-            </div>
-            <div class="tooltip-actions">
-                <a class="tooltip-btn tooltip-btn-rmp" href="https://www.ratemyprofessors.com/search/professors/1253?q=${encodeURIComponent(name)}" target="_blank">Search RMP ↗</a>
-                <button class="tooltip-btn tooltip-btn-detail">Detailed View ⤢</button>
+            <div class="rating-details">
+                <span>No RMP data found</span>
             </div>
         </div>
+    </div>
     `;
 
     cell.innerHTML = '';
