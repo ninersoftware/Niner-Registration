@@ -5,11 +5,19 @@
     "description": "Chrome extension that embeds RateMyProfessors data directly into UNCC course registration portal.",
     "author": "austinkmangold@gmail.com",
     "homepage_url": "https://github.com/ausmango/NinerRatings",
-    "permissions": ["storage"],
+    "permissions": ["storage", "scripting"],
+    "action": {
+        "default_popup": "extension/popup.html",
+        "default_icon": {
+            "16": "icons/logo128px.png",
+            "48": "icons/logo128px.png",
+            "128": "icons/logo128px.png"
+        }
+    },
     "content_scripts": [
         {
             "matches": [
-        "*://selfservice.uncc.edu/StudentRegistrationSsb/*"
+                "*://selfservice.uncc.edu/StudentRegistrationSsb/*"
             ],
             "js": ["extension/content.js", "extension/modal.js", "extension/calendar.js"],
             "css": ["extension/content.css"],
@@ -20,7 +28,8 @@
         "service_worker": "extension/rmp.js"
     },
     "host_permissions": [
-        "https://www.ratemyprofessors.com/*"
+        "https://www.ratemyprofessors.com/*",
+        "*://selfservice.uncc.edu/*"
     ],
     "web_accessible_resources": [
         {
