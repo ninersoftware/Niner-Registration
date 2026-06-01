@@ -29,33 +29,12 @@ function applyTooltipTheme(stats, theme) {
     if (lastReview) lastReview.style.color = lastReviewColor;
     details.forEach(s => s.style.color = textColor);
 
-    const rmpBtn = stats.querySelector('.tooltip-btn-rmp');
-    const detailBtn = stats.querySelector('.tooltip-btn-detail');
+    const calBtn = stats.querySelector('.tooltip-cal-btn');
+    const expandBtn = stats.querySelector('.tooltip-expand-btn');
 
-    if (isLight) {
-        if (rmpBtn) {
-            rmpBtn.style.setProperty('color', '#1a1a1a', 'important');
-            rmpBtn.onmouseenter = () => rmpBtn.style.setProperty('background', 'rgba(0,0,0,0.06)', 'important');
-            rmpBtn.onmouseleave = () => rmpBtn.style.setProperty('background', 'transparent', 'important');
-        }
-        if (detailBtn) {
-            detailBtn.style.setProperty('color', '#1a1a1a', 'important');
-            detailBtn.onmouseenter = () => detailBtn.style.setProperty('background', 'rgba(0,0,0,0.06)', 'important');
-            detailBtn.onmouseleave = () => detailBtn.style.setProperty('background', 'transparent', 'important');
-        }
-    } else {
-        if (rmpBtn) {
-            rmpBtn.style.setProperty('color', '#ffffff', 'important');
-            rmpBtn.onmouseenter = () => rmpBtn.style.setProperty('background', 'rgba(255,255,255,0.12)', 'important');
-            rmpBtn.onmouseleave = () => rmpBtn.style.setProperty('background', 'transparent', 'important');
-        }
-        if (detailBtn) {
-            detailBtn.style.setProperty('color', '#ffffff', 'important');
-            detailBtn.onmouseenter = () => detailBtn.style.setProperty('background', 'rgba(255,255,255,0.12)', 'important');
-            detailBtn.onmouseleave = () => detailBtn.style.setProperty('background', 'transparent', 'important');
-        }
+    if (calBtn) calBtn.style.setProperty('color', isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.6)', 'important');
+    if (expandBtn) expandBtn.style.setProperty('color', isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.6)', 'important');
     }
-}
 
 function injectOverview(cell, data, originalName) {
     const overview = document.createElement('div');
@@ -111,11 +90,56 @@ function injectOverview(cell, data, originalName) {
         window.open(`https://www.ratemyprofessors.com/professor/${data.legacyId}`, '_blank');
     });
 
-    const detailBtn = overview.querySelector('.tooltip-btn-detail');
-    detailBtn.addEventListener('click', (event) => {
+    const expandBtn = overview.querySelector('.tooltip-expand-btn');
+    expandBtn.addEventListener('click', (event) => {
         event.stopPropagation();
-        const nameLink = overview.querySelector('.professor-name');
-        openModal(nameLink, data); 
+        openModal(overview.querySelector('.professor-name'), data);
+    });
+
+    const calBtn = overview.querySelector('.tooltip-cal-btn');
+    calBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const courseData = parseCourseRow(overview);
+        if (!courseData) return;
+        chrome.storage.local.get('ninerQueue', (result) => {
+            const queue = result.ninerQueue || [];
+            const alreadyAdded = queue.some(c =>
+                c.subject === courseData.subject &&
+                c.courseNumber === courseData.courseNumber
+            );
+            if (!alreadyAdded) {
+                const courseToSave = {
+                    subject: courseData.subject,
+                    courseNumber: courseData.courseNumber,
+                    title: courseData.title,
+                    credits: courseData.credits,
+                    meetings: courseData.meetings
+                };
+                chrome.storage.local.set({ ninerQueue: [...queue, courseToSave] });
+                calBtn.style.color = '#046A38';
+                calBtn.title = 'Added to calendar';
+            } else {
+                const newQueue = queue.filter(c =>
+                    !(c.subject === courseData.subject &&
+                    c.courseNumber === courseData.courseNumber)
+                );
+                chrome.storage.local.set({ ninerQueue: newQueue });
+                calBtn.style.color = '';
+                calBtn.title = 'Add to calendar';
+            }
+        });
+    });
+
+    chrome.storage.local.get('ninerQueue', (result) => {
+        const queue = result.ninerQueue || [];
+        const courseData = parseCourseRow(overview);
+        if (courseData && queue.some(c =>
+            c.subject === courseData.subject &&
+            c.courseNumber === courseData.courseNumber
+        )) {
+            calBtn.style.color = '#046A38';
+            calBtn.title = 'Added to calendar';
+        }
     });
 
     chrome.storage.local.get('ninerTheme', (result) => {
@@ -170,11 +194,42 @@ function injectNotFound(cell, name) {
     cell.innerHTML = '';
     cell.appendChild(overview);
 
-    const detailBtn = overview.querySelector('.tooltip-btn-detail');
-    detailBtn.addEventListener('click', (event) => {
+    const expandBtn = overview.querySelector('.tooltip-expand-btn');
+    expandBtn.addEventListener('click', (event) => {
         event.stopPropagation();
-        const plainName = overview.querySelector('.professor-name-plain');
-        openModal(plainName, null);
+        openModal(overview.querySelector('.professor-name-plain'), null);
+    });
+
+    const calBtn = overview.querySelector('.tooltip-cal-btn');
+    calBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const courseData = parseCourseRow(overview);
+        if (!courseData) return;
+        chrome.storage.local.get('ninerQueue', (result) => {
+            const queue = result.ninerQueue || [];
+            const alreadyAdded = queue.some(c =>
+                c.subject === courseData.subject &&
+                c.courseNumber === courseData.courseNumber
+            );
+            if (!alreadyAdded) {
+                const courseToSave = {
+                    subject: courseData.subject,
+                    courseNumber: courseData.courseNumber,
+                    title: courseData.title,
+                    credits: courseData.credits,
+                    meetings: courseData.meetings
+                };
+                chrome.storage.local.set({ ninerQueue: [...queue, courseToSave] });
+                calBtn.style.color = '#046A38';
+            } else {
+                const newQueue = queue.filter(c =>
+                    !(c.subject === courseData.subject &&
+                    c.courseNumber === courseData.courseNumber)
+                );
+                chrome.storage.local.set({ ninerQueue: newQueue });
+                calBtn.style.color = '';
+            }
+        });
     });
 
     chrome.storage.local.get('ninerTheme', (result) => {
