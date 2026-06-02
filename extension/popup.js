@@ -99,5 +99,7 @@ document.querySelectorAll('.theme-swatch').forEach(swatch => {
         const theme = swatch.getAttribute('data-theme');
         chrome.storage.local.set({ ninerTheme: theme });
         updateSwatches(theme);
+        
+        document.body.className = `theme-${theme}`;
     });
 });

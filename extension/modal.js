@@ -123,14 +123,11 @@ function openModal(clickedElement, rmpData) {
 
     modalContainer.innerHTML = `
         <div class="niner-topbar">
-            <button class="niner-settings-btn">⚙</button>
+            <div class="niner-header">
+                <div class="niner-prof">${profName}</div>
+                <div class="niner-course">${courseData.subject} ${courseData.courseNumber}  ·  ${courseData.credits} Credits</div>
+            </div>
             <button class="niner-close-btn">✕</button>
-        </div>
-
-        <div class="niner-header">
-            <div class="niner-prof">${profName}</div>
-            <div class="niner-course">${courseData.subject} ${courseData.courseNumber}  ·  ${courseData.credits} Credits</div>
-            ${meetingLines}
         </div>
 
         <div class="niner-divider"></div>
@@ -147,19 +144,6 @@ function openModal(clickedElement, rmpData) {
             <a class="niner-link niner-link-coursicle" href="https://www.coursicle.com/uncc/courses/${courseData.subject}/${courseData.courseNumber}/" target="_blank">Coursicle ↗</a>
         </div>
 
-        <div class="niner-divider"></div>
-
-        <div class="niner-tray">
-            <button class="niner-tray-add">+ Add</button>
-            <div class="niner-tray-courses">
-                <span class="niner-tray-empty"> Add courses to build your calendar export</span>
-            </div>
-            <div class="niner-tray-actions">
-                <button class="niner-tray-btn niner-tray-undo">Clear</button>
-                <button class="niner-tray-btn niner-tray-export">⬇ .ics</button>
-            </div>
-        </div>
-
         <div class="niner-credit">© 2026 ninersoftware</div>    
     `;
 
@@ -167,85 +151,6 @@ function openModal(clickedElement, rmpData) {
     document.body.appendChild(overlay);
 
     modalContainer.querySelector('.niner-close-btn').addEventListener('click', () => overlay.remove());
-
-    modalContainer.querySelector('.niner-settings-btn').addEventListener('click', () => {
-        openSettings(modalContainer);
-    });
-
-    overlay.addEventListener('click', (event) => {
-        if (event.target === overlay) {
-            overlay.remove();
-        }
-    });
-        
-    const trayCoursesEL = modalContainer.querySelector('.niner-tray-courses');
-    const addBtn = modalContainer.querySelector('.niner-tray-add');
-    const undoBtn = modalContainer.querySelector('.niner-tray-undo');
-    const exportBtn = modalContainer.querySelector('.niner-tray-export');
-
-    chrome.storage.local.get('ninerQueue', (result) => {
-        const queue = result.ninerQueue || [];
-        renderTray(trayCoursesEL, queue, removeAtIndex);
-
-        const alreadyAdded = queue.some(c =>
-            c.subject === courseData.subject &&
-            c.courseNumber === courseData.courseNumber
-        );
-        if (alreadyAdded) {
-            addBtn.textContent = '✓ Added';
-            addBtn.style.background = '#035a2f';
-        }
-    });
-
-    addBtn.addEventListener('click', () => {
-        chrome.storage.local.get('ninerQueue', (result) => {
-            const queue = result.ninerQueue || [];
-
-            const alreadyAdded = queue.some(c =>
-                c.subject === courseData.subject &&
-                c.courseNumber === courseData.courseNumber
-            );
-
-            if (alreadyAdded) {
-                const newQueue = queue.filter(c =>
-                    !(c.subject === courseData.subject &&
-                      c.courseNumber === courseData.courseNumber)
-                );
-                chrome.storage.local.set({ ninerQueue: newQueue });
-                renderTray(trayCoursesEL, newQueue, removeAtIndex);
-                addBtn.textContent = '+ Add';
-                addBtn.style.background = '#046A38';
-            } else {
-                const courseToSave = {
-                    subject: courseData.subject,
-                    courseNumber: courseData.courseNumber,
-                    title: courseData.title,
-                    credits: courseData.credits,
-                    meetings: courseData.meetings
-                };
-                const newQueue = [...queue, courseToSave];
-                chrome.storage.local.set({ ninerQueue: newQueue });
-                renderTray(trayCoursesEL, newQueue, removeAtIndex);
-                addBtn.textContent = '✓ Added';
-                addBtn.style.background = '#035a2f';
-            }
-        });
-    });
-
-    undoBtn.addEventListener('click', () => {
-        chrome.storage.local.set({ ninerQueue: [] });
-        renderTray(trayCoursesEL, [], removeAtIndex);
-        addBtn.textContent = '+ Add';
-        addBtn.style.background = '#046A38';
-    });
-
-    exportBtn.addEventListener('click', () => {
-        chrome.storage.local.get('ninerQueue', (result) => {
-            const queue = result.ninerQueue || [];
-            if (queue.length === 0) return;
-            exportToICS(queue);
-        });
-    });
 }
 
 function parseCourseRow(clickedElement) {

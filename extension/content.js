@@ -304,7 +304,7 @@ chrome.storage.local.onChanged.addListener((changes) => {
     if (changes.ninerTheme) {
         const theme = changes.ninerTheme.newValue || 'white';
         document.querySelectorAll('.professor-stats').forEach(stats => {
-            applyTheme(stats, theme); // Corrected callback helper name
+            applyTooltipTheme(stats, theme)
         });
     }
 });
