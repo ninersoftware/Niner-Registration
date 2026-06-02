@@ -1,4 +1,3 @@
-// Tab switching
 document.querySelectorAll('.popup-tab').forEach(tab => {
     tab.addEventListener('click', () => {
         document.querySelectorAll('.popup-tab').forEach(t => t.classList.remove('active'));
@@ -8,7 +7,6 @@ document.querySelectorAll('.popup-tab').forEach(tab => {
     });
 });
 
-// Load calendar queue
 function renderCalendar(queue) {
     const container = document.getElementById('cal-list-container');
     const actions = document.getElementById('cal-actions');
@@ -99,7 +97,5 @@ document.querySelectorAll('.theme-swatch').forEach(swatch => {
         const theme = swatch.getAttribute('data-theme');
         chrome.storage.local.set({ ninerTheme: theme });
         updateSwatches(theme);
-        
-        document.body.className = `theme-${theme}`;
     });
 });

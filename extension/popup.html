@@ -4,35 +4,37 @@
     <meta charset="UTF-8">
     <style>
         @font-face {
-        font-family: 'General-Sans';
-        src: url(chrome-extension://__MSG_@@extension_id__/fonts/GeneralSans-Regular.woff);
-        font-weight: 400;
+            font-family: 'General-Sans';
+            src: url('../fonts/GeneralSans-Regular.woff');
+            font-weight: 400;
         }
         @font-face {
             font-family: 'General-Sans';
-            src: url(chrome-extension://__MSG_@@extension_id__/fonts/GeneralSans-Medium.woff);
+            src: url('../fonts/GeneralSans-Medium.woff');
             font-weight: 500;
         }
         @font-face {
             font-family: 'General-Sans';
-            src: url(chrome-extension://__MSG_@@extension_id__/fonts/GeneralSans-Semibold.woff);
+            src: url('../fonts/GeneralSans-Semibold.woff');
             font-weight: 600;
         }
         @font-face {
             font-family: 'General-Sans';
-            src: url(chrome-extension://__MSG_@@extension_id__/fonts/GeneralSans-Bold.woff);
+            src: url('../fonts/GeneralSans-Bold.woff');
             font-weight: 700;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
+       body {
             width: 320px;
-            font-family: 'General-Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 230px;
+            font-family: 'General-Sans', sans-serif;
             background: #ffffff;
             color: #101820;
             display: flex;
             flex-direction: column;
+            -webkit-font-smoothing: antialiased;
         }
 
         .popup-header {
@@ -42,27 +44,23 @@
             gap: 8px;
         }
 
-        .popup-logo {
-            font-size: 14px;
-            font-weight: 700;
-            color: #046A38;
-        }
-
         .popup-title {
-            font-size: 13px;
+            font-size: 20px;
             font-weight: 700;
             color: #046A38;
-            letter-spacing: -0.01em;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
         }
 
         .popup-version {
-            font-size: 10px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 700;
             color: rgba(0,0,0,0.25);
             margin-left: auto;
         }
 
         .popup-tabs {
+            font-size: 20;
             display: flex;
             padding: 12px 16px 0 16px;
             gap: 4px;
@@ -70,7 +68,7 @@
             margin-top: 8px;
         }
 
-        .popup-tab {
+       .popup-tab {
             padding: 6px 12px;
             font-size: 12px;
             font-weight: 600;
@@ -81,7 +79,8 @@
             border-bottom: 2px solid transparent;
             margin-bottom: -1px;
             transition: all 0.15s;
-            font-family: inherit;
+            font-family: 'General-Sans', sans-serif;
+            letter-spacing: -0.01em;
         }
 
         .popup-tab.active {
@@ -218,9 +217,9 @@
         }
 
         .settings-group-label {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 700;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
             color: rgba(0,0,0,0.4);
         }
@@ -274,6 +273,11 @@
         body.theme-green #tab-calendar .cal-btn-export { background: #ffffff; color: #046A38; }
         body.theme-green #tab-calendar .cal-btn-export:hover { background: rgba(255,255,255,0.9); }
 
+        body.theme-dark #tab-settings,
+        body.theme-green #tab-settings {
+            background: #ffffff !important;
+            color: #101820 !important;
+        }
         .popup-footer {
             padding: 10px 16px 14px 16px;
             border-top: 1px solid rgba(0,0,0,0.04);
@@ -309,7 +313,7 @@
     <div class="tab-content" id="tab-settings">
         <div class="settings-section">
             <div class="settings-group">
-                <div class="settings-group-label">Themes (reload after selecting)</div>
+                <div class="settings-group-label">Themes</div>
                 <div class="theme-options">
                     <button class="theme-swatch theme-swatch-white" data-theme="white"></button>
                     <button class="theme-swatch theme-swatch-dark" data-theme="dark"></button>
