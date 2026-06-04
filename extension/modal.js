@@ -103,41 +103,72 @@ function parseDescription(html) {
 }
 
 function parsePrerequisites(html) {
-    const subjectMap = {
-        'Computing and Informatics': 'ITSC',
-        'Computer Science': 'ITSC',
-        'Software and Information Sys': 'ITSC',
-        'Mathematics': 'MATH',
-        'Statistics': 'STAT',
-    };
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const rows = [...doc.querySelectorAll('tbody tr')];
     if (!rows.length) return null;
-    const parts = rows.map((row, i) => {
+
+    // Group rows into bullet groups: AND starts a new group, OR appends to current
+    const groups = [];
+    rows.forEach((row) => {
         const cells = [...row.querySelectorAll('td')].map(td => td.textContent.trim());
-        const andOr = cells[0] || '';
+        const andOr = cells[0].toUpperCase();
         const subject = cells[4] || '';
         const courseNum = cells[5] || '';
         const grade = cells[7] || '';
-        const code = subjectMap[subject] || subject;
         const gradeStr = grade ? ` (min grade ${grade})` : '';
-        const prefix = i === 0 ? '' : `${andOr} `;
-        return `${prefix}${code} ${courseNum}${gradeStr}`;
+        const entry = `${subject} ${courseNum}${gradeStr}`.trim();
+
+        if (!entry.replace(/\s+/g, '')) return;
+
+        if (groups.length === 0 || andOr === 'AND' || andOr === '') {
+            groups.push([entry]);
+        } else {
+            groups[groups.length - 1].push(entry);
+        }
     });
-    return parts.join(' ').trim() || null;
+
+    if (!groups.length) return null;
+
+    return groups.map(group => {
+        return `<div class="niner-prereq-item">• ${group.join(' <span class="niner-or">or</span> ')}</div>`;
+    }).join('');
 }
 
 function parseRestrictions(html) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
+
+    // Try to find structured restriction rows
+    const rows = [...doc.querySelectorAll('tbody tr')];
+    if (rows.length) {
+        const items = rows.map(row => {
+            const text = row.textContent.replace(/\s+/g, ' ').trim();
+            return text ? `<div class="niner-prereq-item">• ${text}</div>` : '';
+        }).filter(Boolean);
+        if (items.length) return items.join('');
+    }
+
+    // Fallback to plain text
     const text = doc.body.textContent.replace(/\s+/g, ' ').trim();
-    if (!text || text.toLowerCase().includes('no restriction')) return null;
-    return text || null;
+    if (!text || text.toLowerCase().includes('no restriction') || text.toLowerCase().includes('no course restriction')) return null;
+    return `<div class="niner-prereq-item">${text}</div>`;
 }
 
 function populateOverviewTab(overviewEl, data) {
     overviewEl.querySelector('.niner-ov-desc').textContent = data.description || 'N/A';
-    overviewEl.querySelector('.niner-ov-prereq').textContent = data.prerequisites || 'N/A';
-    overviewEl.querySelector('.niner-ov-restrict').textContent = data.restrictions || 'N/A';
+
+    const prereqEl = overviewEl.querySelector('.niner-ov-prereq');
+    if (data.prerequisites) {
+        prereqEl.innerHTML = data.prerequisites;
+    } else {
+        prereqEl.textContent = 'N/A';
+    }
+
+    const restrictEl = overviewEl.querySelector('.niner-ov-restrict');
+    if (data.restrictions) {
+        restrictEl.innerHTML = data.restrictions;
+    } else {
+        restrictEl.textContent = 'N/A';
+    }
 }
 
 function buildOverviewTabShell() {
