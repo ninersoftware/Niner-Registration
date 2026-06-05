@@ -2,7 +2,7 @@ let _gradesData = null;
 
 async function loadGrades() {
     if (_gradesData) return _gradesData;
-    const url = chrome.runtime.getURL('data/grades.json');
+    const url = chrome.runtime.getURL('extension/data/grades.json');
     const res = await fetch(url);
     _gradesData = await res.json();
     return _gradesData;

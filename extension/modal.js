@@ -188,11 +188,11 @@ function buildOverviewTabShell(courseData, rmpUrl) {
         <div class="niner-ov-links">
             <a class="niner-link niner-link-coursicle" href="https://www.coursicle.com/uncc/courses/${courseData.subject}/${courseData.courseNumber}/" target="_blank">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                Coursicle ↗
+                Coursicle
             </a>
             <a class="niner-link niner-link-rmp" href="${rmpUrl}" target="_blank">
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                RateMyProfessors ↗
+                RateMyProfessors
             </a>
         </div>
     `;
@@ -219,6 +219,110 @@ function loadCourseDetails(row, callback) {
         });
     }).catch(() => {
         callback({ description: null, prerequisites: null, restrictions: null });
+    });
+}
+
+function calcGPA(grades) {
+    const points = { A: 4.0, B: 3.0, C: 2.0, D: 1.0, F: 0.0 };
+    let totalPoints = 0;
+    let totalGraded = 0;
+    for (const [letter, pts] of Object.entries(points)) {
+        const count = grades[letter] || 0;
+        totalPoints += pts * count;
+        totalGraded += count;
+    }
+    if (totalGraded === 0) return null;
+    return (totalPoints / totalGraded).toFixed(2);
+}
+
+function buildGradeChart(gradeData, semesterKey) {
+    const grades = semesterKey === 'all' ? gradeData.all : gradeData.semesters[semesterKey];
+    if (!grades) return '<div class="niner-grade-empty">No data for this semester.</div>';
+
+    const labels = ['A', 'B', 'C', 'D', 'F', 'W'];
+    const colors = {
+        A: '#2ca25f',
+        B: '#74c476',
+        C: '#e9a400',
+        D: '#fd8d3c',
+        F: '#de2d26',
+        W: '#969696'
+    };
+
+    const values = labels.map(l => grades[l] || 0);
+    const total = values.reduce((a, b) => a + b, 0);
+    const maxVal = Math.max(...values, 1);
+    const gpa = calcGPA(grades);
+
+    const chartW = 480;
+    const chartH = 160;
+    const barW = 44;
+    const gap = 28;
+    const startX = 40;
+    const topPad = 16;
+    const bottomPad = 32;
+    const availH = chartH - topPad - bottomPad;
+
+    const gridLines = [0, 0.25, 0.5, 0.75, 1].map(pct => {
+        const y = topPad + availH * (1 - pct);
+        const val = Math.round(maxVal * pct);
+        return `<line x1="${startX}" y1="${y}" x2="${chartW - 10}" y2="${y}" class="niner-grid-line"/>
+                <text x="${startX - 6}" y="${y + 4}" class="niner-axis-label" text-anchor="end">${val}</text>`;
+    }).join('');
+
+    const bars = labels.map((label, i) => {
+        const val = values[i];
+        const barH = val === 0 ? 0 : Math.max(4, (val / maxVal) * availH);
+        const x = startX + i * (barW + gap);
+        const y = topPad + availH - barH;
+        const pct = total > 0 ? ((val / total) * 100).toFixed(1) : '0.0';
+        return `
+            <rect x="${x}" y="${y}" width="${barW}" height="${barH}" fill="${colors[label]}" rx="3" class="niner-grade-bar" data-label="${label}" data-val="${val}" data-pct="${pct}%"/>
+            <text x="${x + barW/2}" y="${topPad + availH + 16}" class="niner-bar-label" text-anchor="middle">${label}</text>
+            ${val > 0 ? `<text x="${x + barW/2}" y="${y - 5}" class="niner-bar-val" text-anchor="middle">${val}</text>` : ''}
+        `;
+    }).join('');
+
+    const svgWidth = startX + labels.length * (barW + gap) - gap + 20;
+
+    return `
+        <div class="niner-grade-chart-wrap">
+            <svg viewBox="0 0 ${svgWidth} ${chartH}" class="niner-grade-svg">
+                ${gridLines}
+                ${bars}
+            </svg>
+            <div class="niner-grade-stats-row">
+                ${gpa !== null ? `<span>Avg GPA: <strong>${gpa}</strong></span>` : ''}
+                <span><strong>${total}</strong> students</span>
+            </div>
+        </div>
+    `;
+}
+
+function renderGradeTab(gradeEl, gradeData, courseData, profName) {
+    if (!gradeData) {
+        gradeEl.innerHTML = '<div class="niner-grade-empty">No grade data found for this instructor and course.</div>';
+        return;
+    }
+
+    const semesters = Object.keys(gradeData.semesters);
+    const dropdownOptions = ['all', ...semesters].map(s =>
+        `<option value="${s}">${s === 'all' ? 'All Semesters' : s}</option>`
+    ).join('');
+
+    gradeEl.innerHTML = `
+        <div class="niner-grade-header">
+            <span class="niner-grade-prof">${gradeData.instructor} · ${courseData.subject} ${courseData.courseNumber}</span>
+            <select class="niner-grade-select">${dropdownOptions}</select>
+        </div>
+        <div class="niner-grade-chart-container">
+            ${buildGradeChart(gradeData, 'all')}
+        </div>
+    `;
+
+    gradeEl.querySelector('.niner-grade-select').addEventListener('change', (e) => {
+        gradeEl.querySelector('.niner-grade-chart-container').innerHTML =
+            buildGradeChart(gradeData, e.target.value);
     });
 }
 
@@ -275,9 +379,7 @@ function openModal(clickedElement, rmpData) {
         </div>
 
         <div class="niner-tab-content" id="niner-tab-grades">
-            <div class="niner-grade-placeholder-wrap">
-                <span class="niner-grade-placeholder">Coming soon</span>
-            </div>
+            <div class="niner-grade-loading">Loading grade data...</div>
         </div>
 
         <div class="niner-modal-footer">
@@ -314,6 +416,11 @@ function openModal(clickedElement, rmpData) {
     const overviewEl = modalContainer.querySelector('#niner-tab-overview');
     loadCourseDetails(row, (data) => {
         populateOverviewTab(overviewEl, data);
+    });
+
+    const gradeEl = modalContainer.querySelector('#niner-tab-grades');
+    getGradeData(courseData.subject, courseData.courseNumber, profName).then(gradeData => {
+        renderGradeTab(gradeEl, gradeData, courseData, profName);
     });
 }
 
