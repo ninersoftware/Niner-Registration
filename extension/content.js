@@ -10,7 +10,7 @@ function applyTooltipTheme(stats, theme) {
     const borderColor = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.15)';
     const lastReviewColor = isLight ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)';
 
-    if (theme === 'dark') stats.style.background = '#101820';
+    if (theme === 'dark') stats.style.background = '#000000';
     else if (theme === 'green') stats.style.background = '#046A38';
     else {
         stats.style.background = '#ffffff';
@@ -31,9 +31,78 @@ function applyTooltipTheme(stats, theme) {
 
     const calBtn = stats.querySelector('.tooltip-cal-btn');
     const expandBtn = stats.querySelector('.tooltip-expand-btn');
+    const defaultColor = isLight ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.6)';
+    const hoverColor = isLight ? 'rgba(0,0,0,0.85)' : '#ffffff';
+    const hoverBg = isLight ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.1)';
 
-    if (calBtn) calBtn.style.setProperty('color', isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.6)', 'important');
-    if (expandBtn) expandBtn.style.setProperty('color', isLight ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.6)', 'important');
+    [calBtn, expandBtn].forEach(btn => {
+        if (!btn) return;
+        btn.style.color = defaultColor;
+        btn.onmouseenter = () => {
+            btn.style.color = hoverColor;
+            btn.style.background = hoverBg;
+        };
+        btn.onmouseleave = () => {
+            btn.style.color = defaultColor;
+            btn.style.background = 'none';
+        };
+    });
+}
+
+const calendarIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>`;
+
+function syncCalBtn(calBtn, courseData) {
+    chrome.storage.local.get('ninerQueue', (result) => {
+        const queue = result.ninerQueue || [];
+        const isAdded = queue.some(c =>
+            c.subject === courseData.subject &&
+            c.courseNumber === courseData.courseNumber
+        );
+        calBtn.innerHTML = isAdded ? `${calendarIconSvg} ✓ Added` : `${calendarIconSvg} Add`;
+        calBtn.title = isAdded ? 'Added to calendar' : 'Add to calendar';
+    });
+}
+
+function setupCalBtn(calBtn, overview) {
+    calBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const courseData = parseCourseRow(overview);
+        if (!courseData) return;
+        chrome.storage.local.get('ninerQueue', (result) => {
+            const queue = result.ninerQueue || [];
+            const alreadyAdded = queue.some(c =>
+                c.subject === courseData.subject &&
+                c.courseNumber === courseData.courseNumber
+            );
+            if (!alreadyAdded) {
+                const courseToSave = {
+                    subject: courseData.subject,
+                    courseNumber: courseData.courseNumber,
+                    title: courseData.title,
+                    credits: courseData.credits,
+                    meetings: courseData.meetings
+                };
+                chrome.storage.local.set({ ninerQueue: [...queue, courseToSave] });
+                calBtn.innerHTML = `${calendarIconSvg} ✓ Added`;
+                calBtn.title = 'Added to calendar';
+            } else {
+                const newQueue = queue.filter(c =>
+                    !(c.subject === courseData.subject &&
+                    c.courseNumber === courseData.courseNumber)
+                );
+                chrome.storage.local.set({ ninerQueue: newQueue });
+                calBtn.innerHTML = `${calendarIconSvg} Add`;
+                calBtn.title = 'Add to calendar';
+            }
+        });
+    });
+
+    // Initial state
+    const courseData = parseCourseRow(overview);
+    if (courseData) syncCalBtn(calBtn, courseData);
+
+    // Register for external queue changes (Clear All, popup remove)
+    calBtn._ninerCourseData = () => parseCourseRow(overview);
 }
 
 function injectOverview(cell, data, originalName) {
@@ -47,8 +116,6 @@ function injectOverview(cell, data, originalName) {
         ? "N/A"
         : `${Math.round(data.wouldTakeAgainPercent)}%`;
     const lowRatings = data.numRatings < 10;
-
-    const calendarIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>`;
 
     overview.innerHTML = `
     <span class="professor-name" style="cursor:pointer;">
@@ -97,51 +164,7 @@ function injectOverview(cell, data, originalName) {
         openModal(overview.querySelector('.professor-name'), data);
     });
 
-    const calBtn = overview.querySelector('.tooltip-cal-btn');
-    calBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        const courseData = parseCourseRow(overview);
-        if (!courseData) return;
-        chrome.storage.local.get('ninerQueue', (result) => {
-            const queue = result.ninerQueue || [];
-            const alreadyAdded = queue.some(c =>
-                c.subject === courseData.subject &&
-                c.courseNumber === courseData.courseNumber
-            );
-            if (!alreadyAdded) {
-                const courseToSave = {
-                    subject: courseData.subject,
-                    courseNumber: courseData.courseNumber,
-                    title: courseData.title,
-                    credits: courseData.credits,
-                    meetings: courseData.meetings
-                };
-                chrome.storage.local.set({ ninerQueue: [...queue, courseToSave] });
-                calBtn.innerHTML = `${calendarIconSvg} ✓ Added`;
-                calBtn.title = 'Added to calendar';
-            } else {
-                const newQueue = queue.filter(c =>
-                    !(c.subject === courseData.subject &&
-                    c.courseNumber === courseData.courseNumber)
-                );
-                chrome.storage.local.set({ ninerQueue: newQueue });
-                calBtn.innerHTML = `${calendarIconSvg} Add`;
-                calBtn.title = 'Add to calendar';
-            }
-        });
-    });
-
-    chrome.storage.local.get('ninerQueue', (result) => {
-        const queue = result.ninerQueue || [];
-        const courseData = parseCourseRow(overview);
-        if (courseData && queue.some(c =>
-            c.subject === courseData.subject &&
-            c.courseNumber === courseData.courseNumber
-        )) {
-            calBtn.innerHTML = `${calendarIconSvg} ✓ Added`;
-            calBtn.title = 'Added to calendar';
-        }
-    });
+    setupCalBtn(overview.querySelector('.tooltip-cal-btn'), overview);
 
     chrome.storage.local.get('ninerTheme', (result) => {
         applyTooltipTheme(overview.querySelector('.professor-stats'), result.ninerTheme || 'white');
@@ -165,8 +188,6 @@ function injectOverview(cell, data, originalName) {
 function injectNotFound(cell, name) {
     const overview = document.createElement('div');
     overview.className = 'professor-container';
-    
-    const calendarIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>`;
 
     overview.innerHTML = `
     <span class="professor-name-plain">
@@ -203,51 +224,7 @@ function injectNotFound(cell, name) {
         openModal(overview.querySelector('.professor-name-plain'), null);
     });
 
-    const calBtn = overview.querySelector('.tooltip-cal-btn');
-    calBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        const courseData = parseCourseRow(overview);
-        if (!courseData) return;
-        chrome.storage.local.get('ninerQueue', (result) => {
-            const queue = result.ninerQueue || [];
-            const alreadyAdded = queue.some(c =>
-                c.subject === courseData.subject &&
-                c.courseNumber === courseData.courseNumber
-            );
-            if (!alreadyAdded) {
-                const courseToSave = {
-                    subject: courseData.subject,
-                    courseNumber: courseData.courseNumber,
-                    title: courseData.title,
-                    credits: courseData.credits,
-                    meetings: courseData.meetings
-                };
-                chrome.storage.local.set({ ninerQueue: [...queue, courseToSave] });
-                calBtn.innerHTML = `${calendarIconSvg} ✓ Added`;
-                calBtn.title = 'Added to calendar';
-            } else {
-                const newQueue = queue.filter(c =>
-                    !(c.subject === courseData.subject &&
-                    c.courseNumber === courseData.courseNumber)
-                );
-                chrome.storage.local.set({ ninerQueue: newQueue });
-                calBtn.innerHTML = `${calendarIconSvg} Add`;
-                calBtn.title = 'Add to calendar';
-            }
-        });
-    });
-
-    chrome.storage.local.get('ninerQueue', (result) => {
-        const queue = result.ninerQueue || [];
-        const courseData = parseCourseRow(overview);
-        if (courseData && queue.some(c =>
-            c.subject === courseData.subject &&
-            c.courseNumber === courseData.courseNumber
-        )) {
-            calBtn.innerHTML = `${calendarIconSvg} ✓ Added`;
-            calBtn.title = 'Added to calendar';
-        }
-    });
+    setupCalBtn(overview.querySelector('.tooltip-cal-btn'), overview);
 
     chrome.storage.local.get('ninerTheme', (result) => {
         applyTooltipTheme(overview.querySelector('.professor-stats'), result.ninerTheme || 'white');
@@ -304,7 +281,22 @@ chrome.storage.local.onChanged.addListener((changes) => {
     if (changes.ninerTheme) {
         const theme = changes.ninerTheme.newValue || 'white';
         document.querySelectorAll('.professor-stats').forEach(stats => {
-            applyTooltipTheme(stats, theme)
+            applyTooltipTheme(stats, theme);
+        });
+    }
+
+    if (changes.ninerQueue) {
+        const queue = changes.ninerQueue.newValue || [];
+        document.querySelectorAll('.tooltip-cal-btn').forEach(btn => {
+            if (!btn._ninerCourseData) return;
+            const courseData = btn._ninerCourseData();
+            if (!courseData) return;
+            const isAdded = queue.some(c =>
+                c.subject === courseData.subject &&
+                c.courseNumber === courseData.courseNumber
+            );
+            btn.innerHTML = isAdded ? `${calendarIconSvg} ✓ Added` : `${calendarIconSvg} Add`;
+            btn.title = isAdded ? 'Added to calendar' : 'Add to calendar';
         });
     }
 });

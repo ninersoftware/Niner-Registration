@@ -246,6 +246,7 @@ td[xe-field="instructor"] {
     flex-direction: column;
     overflow: hidden;
     font-family: 'General-Sans', sans-serif;
+    border-radius: 8px;
 }
 
 .niner-topbar {
