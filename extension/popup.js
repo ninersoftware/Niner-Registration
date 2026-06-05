@@ -3,7 +3,9 @@ document.querySelectorAll('.popup-tab').forEach(tab => {
         document.querySelectorAll('.popup-tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         tab.classList.add('active');
-        document.getElementById(`tab-${tab.getAttribute('data-tab')}`).classList.add('active');
+        const tabId = tab.getAttribute('data-tab');
+        document.getElementById(`tab-${tabId}`).classList.add('active');
+        document.body.classList.toggle('on-settings', tabId === 'settings');
     });
 });
 
@@ -12,7 +14,7 @@ function renderCalendar(queue) {
     const actions = document.getElementById('cal-actions');
 
     if (queue.length === 0) {
-        container.innerHTML = '<p class="cal-empty">No courses added yet. Hover over a professor to add a course.</p>';
+        container.innerHTML = '<p class="cal-empty">No courses added yet.<br>Hover over a professor to add a course.</p>';
         actions.style.display = 'none';
         return;
     }
