@@ -136,21 +136,21 @@ function parsePrerequisites(html) {
 
 function parseRestrictions(html) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
+    const fullText = doc.body.textContent.replace(/\s+/g, ' ').trim();
+    if (!fullText || fullText.toLowerCase().includes('no restriction') || fullText.toLowerCase().includes('no course restriction')) return null;
 
-    // Try to find structured restriction rows
-    const rows = [...doc.querySelectorAll('tbody tr')];
-    if (rows.length) {
-        const items = rows.map(row => {
-            const text = row.textContent.replace(/\s+/g, ' ').trim();
-            return text ? `<div class="niner-prereq-item">• ${text}</div>` : '';
-        }).filter(Boolean);
-        if (items.length) return items.join('');
-    }
+    // Split on "Must be enrolled" boundaries into separate bullet points
+    const noteMatch = fullText.match(/not all restrictions are applicable\.?/i);
+    const note = noteMatch ? `<div class="niner-restrict-note">Note: Not all restrictions are applicable.</div>` : '';
 
-    // Fallback to plain text
-    const text = doc.body.textContent.replace(/\s+/g, ' ').trim();
-    if (!text || text.toLowerCase().includes('no restriction') || text.toLowerCase().includes('no course restriction')) return null;
-    return `<div class="niner-prereq-item">${text}</div>`;
+    const cleaned = fullText.replace(/not all restrictions are applicable\.?\s*/i, '');
+    const bullets = cleaned.split(/(?=Must be enrolled)/i)
+        .map(s => s.trim())
+        .filter(Boolean)
+        .map(s => `<div class="niner-prereq-item">• ${s}</div>`)
+        .join('');
+
+    return note + (bullets || `<div class="niner-prereq-item">${cleaned}</div>`);
 }
 
 function populateOverviewTab(overviewEl, data) {
@@ -171,7 +171,7 @@ function populateOverviewTab(overviewEl, data) {
     }
 }
 
-function buildOverviewTabShell() {
+function buildOverviewTabShell(courseData) {
     return `
         <div class="niner-ov-block">
             <div class="niner-ov-label">Description</div>
@@ -184,6 +184,9 @@ function buildOverviewTabShell() {
         <div class="niner-ov-block">
             <div class="niner-ov-label">Restrictions</div>
             <div class="niner-ov-text niner-ov-restrict">Loading...</div>
+        </div>
+        <div class="niner-ov-coursicle">
+            <a class="niner-link niner-link-coursicle" href="https://www.coursicle.com/uncc/courses/${courseData.subject}/${courseData.courseNumber}/" target="_blank">Coursicle ↗</a>
         </div>
     `;
 }
@@ -243,10 +246,16 @@ function openModal(clickedElement, rmpData) {
         <div class="niner-topbar">
             <div class="niner-header">
                 <div class="niner-prof">${profName}</div>
-                <div class="niner-course">${courseData.subject} ${courseData.courseNumber} · ${courseData.credits} Credits</div>
+                <div class="niner-course">${courseData.subject} ${courseData.courseNumber} · Section ${courseData.section} · ${courseData.credits} Credits</div>
                 ${meetingHeaderLines}
             </div>
-            <button class="niner-close-btn">✕</button>
+            <div class="niner-topbar-right">
+                <button class="niner-crn-btn" title="Copy CRN">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span class="niner-crn-val">${courseData.crn}</span>
+                </button>
+                <button class="niner-close-btn">✕</button>
+            </div>
         </div>
 
         <div class="niner-tabs">
@@ -255,7 +264,7 @@ function openModal(clickedElement, rmpData) {
         </div>
 
         <div class="niner-tab-content active" id="niner-tab-overview">
-            ${buildOverviewTabShell()}
+            ${buildOverviewTabShell(courseData)}
         </div>
 
         <div class="niner-tab-content" id="niner-tab-grades">
@@ -265,7 +274,6 @@ function openModal(clickedElement, rmpData) {
         </div>
 
         <div class="niner-modal-footer">
-            <a class="niner-link niner-link-coursicle" href="https://www.coursicle.com/uncc/courses/${courseData.subject}/${courseData.courseNumber}/" target="_blank">Coursicle ↗</a>
             <span class="niner-credit">© 2026 ninersoftware</span>
         </div>
     `;
@@ -274,6 +282,16 @@ function openModal(clickedElement, rmpData) {
     document.body.appendChild(overlay);
 
     modalContainer.querySelector('.niner-close-btn').addEventListener('click', () => overlay.remove());
+
+    const crnBtn = modalContainer.querySelector('.niner-crn-btn');
+    crnBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(courseData.crn).then(() => {
+            const val = crnBtn.querySelector('.niner-crn-val');
+            const orig = val.textContent;
+            val.textContent = 'Copied!';
+            setTimeout(() => { val.textContent = orig; }, 1500);
+        });
+    });
     overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
 
     modalContainer.querySelectorAll('.niner-tab').forEach(tab => {
