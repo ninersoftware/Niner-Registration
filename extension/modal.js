@@ -171,7 +171,7 @@ function populateOverviewTab(overviewEl, data) {
     }
 }
 
-function buildOverviewTabShell(courseData) {
+function buildOverviewTabShell(courseData, rmpUrl) {
     return `
         <div class="niner-ov-block">
             <div class="niner-ov-label">Description</div>
@@ -185,8 +185,15 @@ function buildOverviewTabShell(courseData) {
             <div class="niner-ov-label">Restrictions</div>
             <div class="niner-ov-text niner-ov-restrict">Loading...</div>
         </div>
-        <div class="niner-ov-coursicle">
-            <a class="niner-link niner-link-coursicle" href="https://www.coursicle.com/uncc/courses/${courseData.subject}/${courseData.courseNumber}/" target="_blank">Coursicle ↗</a>
+        <div class="niner-ov-links">
+            <a class="niner-link niner-link-coursicle" href="https://www.coursicle.com/uncc/courses/${courseData.subject}/${courseData.courseNumber}/" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Coursicle ↗
+            </a>
+            <a class="niner-link niner-link-rmp" href="${rmpUrl}" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                RateMyProfessors ↗
+            </a>
         </div>
     `;
 }
@@ -264,7 +271,7 @@ function openModal(clickedElement, rmpData) {
         </div>
 
         <div class="niner-tab-content active" id="niner-tab-overview">
-            ${buildOverviewTabShell(courseData)}
+            ${buildOverviewTabShell(courseData, rmpUrl)}
         </div>
 
         <div class="niner-tab-content" id="niner-tab-grades">

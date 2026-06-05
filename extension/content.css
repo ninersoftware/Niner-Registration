@@ -296,6 +296,14 @@ td[xe-field="instructor"] {
     transition: color 0.15s;
 }
 
+.niner-close-btn {
+    color: #e07070 !important;
+}
+
+.niner-close-btn:hover {
+    color: #cc2222 !important;
+}
+
 .niner-header {
     padding: 0;
     display: flex;
@@ -421,9 +429,29 @@ td[xe-field="instructor"] {
 
 /* ── FOOTER ───────────────────────────────────────── */
 
-.niner-ov-coursicle {
+.niner-ov-links {
+    display: flex;
+    gap: 10px;
     padding-top: 4px;
     padding-bottom: 4px;
+}
+
+.niner-ov-links .niner-link {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px 5px 0;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none !important;
+    transition: opacity 0.15s;
+    background: none !important;
+}
+
+.niner-ov-links .niner-link:hover {
+    opacity: 0.82;
+    text-decoration: none !important;
 }
 
 .niner-restrict-note {
@@ -709,10 +737,10 @@ td[xe-field="instructor"] {
 .niner-theme-white .niner-prof { color: #046A38; }
 .niner-theme-white .niner-course { color: #2d3748; }
 .niner-theme-white .niner-modal-meeting { color: #4a5568; }
-.niner-theme-white .niner-close-btn { color: #718096; }
+.niner-theme-white .niner-close-btn:hover { color: #cc2222 !important; }
 .niner-theme-white .niner-crn-btn { color: rgba(0,0,0,0.35); }
 .niner-theme-white .niner-crn-btn:hover { background: rgba(0,0,0,0.05); color: rgba(0,0,0,0.7); }
-.niner-theme-white .niner-close-btn:hover { color: #1a202c; }
+
 .niner-theme-white .niner-tab { color: rgba(0,0,0,0.35); }
 .niner-theme-white .niner-tab:hover:not(.active) { color: rgba(0,0,0,0.7); }
 .niner-theme-white .niner-tab.active { color: #046A38; border-bottom-color: #046A38; font-weight: 700; }
@@ -723,7 +751,8 @@ td[xe-field="instructor"] {
 .niner-theme-white .niner-grade-placeholder { color: rgba(0,0,0,0.35); }
 .niner-theme-white .niner-restrict-note { color: rgba(0,0,0,0.45); }
 .niner-theme-white .niner-link { color: #1e4a9e !important; }
-.niner-theme-white .niner-link-coursicle { color: #0c6196 !important; }
+.niner-theme-white .niner-link-coursicle { color: #0077cc !important; }
+.niner-theme-white .niner-link-rmp { color: #1a3a8f !important; }
 .niner-theme-white .niner-modal-footer { border-top: 1px solid rgba(0,0,0,0.07); }
 .niner-theme-white .niner-credit { color: #a0aec0; }
 .niner-theme-white .niner-tray { background: #f2f2f2; }
@@ -739,10 +768,10 @@ td[xe-field="instructor"] {
 .niner-theme-dark .niner-prof { color: #ffffff; }
 .niner-theme-dark .niner-course { color: rgba(255,255,255,0.75); }
 .niner-theme-dark .niner-modal-meeting { color: rgba(255,255,255,0.55); }
-.niner-theme-dark .niner-close-btn { color: rgba(255,255,255,0.4); }
+
 .niner-theme-dark .niner-crn-btn { color: rgba(255,255,255,0.35); }
 .niner-theme-dark .niner-crn-btn:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); }
-.niner-theme-dark .niner-close-btn:hover { color: #ffffff; }
+
 .niner-theme-dark .niner-tab { color: rgba(255,255,255,0.3); }
 .niner-theme-dark .niner-tab:hover:not(.active) { color: rgba(255,255,255,0.7); }
 .niner-theme-dark .niner-tab.active { color: #ffffff; border-bottom-color: #ffffff; font-weight: 700; }
@@ -753,7 +782,8 @@ td[xe-field="instructor"] {
 .niner-theme-dark .niner-grade-placeholder { color: rgba(255,255,255,0.35); }
 .niner-theme-dark .niner-restrict-note { color: rgba(255,255,255,0.4); }
 .niner-theme-dark .niner-link { color: #9bc5ff !important; }
-.niner-theme-dark .niner-link-coursicle { color: #80d3ff !important; }
+.niner-theme-dark .niner-link-coursicle { color: #60b8f5 !important; }
+.niner-theme-dark .niner-link-rmp { color: #7b9fff !important; }
 .niner-theme-dark .niner-modal-footer { border-top: 1px solid rgba(255,255,255,0.08); }
 .niner-theme-dark .niner-credit { color: rgba(255,255,255,0.25); }
 .niner-theme-dark .niner-tray { background: #111111; }
@@ -770,10 +800,10 @@ td[xe-field="instructor"] {
 .niner-theme-green .niner-prof { color: #ffffff; }
 .niner-theme-green .niner-course { color: rgba(255,255,255,0.85); }
 .niner-theme-green .niner-modal-meeting { color: rgba(255,255,255,0.7); }
-.niner-theme-green .niner-close-btn { color: rgba(255,255,255,0.6); }
+
 .niner-theme-green .niner-crn-btn { color: rgba(255,255,255,0.6); }
 .niner-theme-green .niner-crn-btn:hover { background: rgba(255,255,255,0.12); color: #ffffff; }
-.niner-theme-green .niner-close-btn:hover { color: #ffffff; }
+
 .niner-theme-green .niner-tab { color: rgba(255,255,255,0.45); }
 .niner-theme-green .niner-tab:hover:not(.active) { color: rgba(255,255,255,0.8); }
 .niner-theme-green .niner-tab.active { color: #ffffff; border-bottom-color: #ffffff; font-weight: 700; }
@@ -784,7 +814,8 @@ td[xe-field="instructor"] {
 .niner-theme-green .niner-grade-placeholder { color: rgba(255,255,255,0.5); }
 .niner-theme-green .niner-restrict-note { color: rgba(255,255,255,0.6); }
 .niner-theme-green .niner-link { color: #ffffff !important; font-weight: 700; }
-.niner-theme-green .niner-link-coursicle { color: #ffffff !important; font-weight: 700; }
+.niner-theme-green .niner-link-coursicle { color: #ffffff !important; }
+.niner-theme-green .niner-link-rmp { color: #ffffff !important; }
 .niner-theme-green .niner-modal-footer { border-top: 1px solid rgba(255,255,255,0.15); }
 .niner-theme-green .niner-credit { color: rgba(255,255,255,0.4); }
 .niner-theme-green .niner-tray { background: #035a2f; }
