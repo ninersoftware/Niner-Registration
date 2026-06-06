@@ -235,7 +235,7 @@ function calcGPA(grades) {
     return (totalPoints / totalGraded).toFixed(2);
 }
 
-function buildGradeChart(gradeData, semesterKey) {
+function buildGradeChart(gradeData, semesterKey, theme) {
     const grades = semesterKey === 'all' ? gradeData.all : gradeData.semesters[semesterKey];
     if (!grades) return '<div class="niner-grade-empty">No data for this semester.</div>';
 
@@ -263,23 +263,39 @@ function buildGradeChart(gradeData, semesterKey) {
     const bottomPad = 32;
     const availH = chartH - topPad - bottomPad;
 
-    const gridLines = [0, 0.25, 0.5, 0.75, 1].map(pct => {
-        const y = topPad + availH * (1 - pct);
-        const val = Math.round(maxVal * pct);
-        return `<line x1="${startX}" y1="${y}" x2="${chartW - 10}" y2="${y}" class="niner-grid-line"/>
-                <text x="${startX - 6}" y="${y + 4}" class="niner-axis-label" text-anchor="end">${val}</text>`;
+    // Pick clean round step so Y axis labels are always tidy
+    function niceStep(v) {
+        if (v <= 0) return 10;
+        const raw = v / 5;
+        const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+        for (const c of [1, 2, 5, 10, 25, 50, 100, 250, 500]) {
+            if (c * mag >= raw) return c * mag;
+        }
+        return Math.ceil(raw / mag) * mag;
+    }
+    const gridStep = niceStep(maxVal);
+    const gridMax = gridStep * Math.ceil(maxVal / gridStep);
+    const gridVals = [];
+    for (let v = 0; v <= gridMax; v += gridStep) gridVals.push(v);
+
+    const gridLines = gridVals.map(val => {
+        const y = topPad + availH * (1 - val / gridMax);
+        const lineColor = (theme === 'dark' || theme === 'green') ? 'rgba(255,255,255,0.15)' : 'rgba(16,24,32,0.12)';
+        const textColor = (theme === 'dark' || theme === 'green') ? 'rgba(255,255,255,0.5)' : 'rgba(16,24,32,0.45)';
+        return `<line x1="${startX}" y1="${y}" x2="${chartW - 10}" y2="${y}" stroke="${lineColor}" stroke-width="1"/>
+                <text x="${startX - 6}" y="${y + 4}" font-size="10" font-family="General-Sans,sans-serif" fill="${textColor}" text-anchor="end">${val}</text>`;
     }).join('');
 
     const bars = labels.map((label, i) => {
         const val = values[i];
-        const barH = val === 0 ? 0 : Math.max(4, (val / maxVal) * availH);
+        const barH = val === 0 ? 0 : Math.max(4, (val / gridMax) * availH);
         const x = startX + i * (barW + gap);
         const y = topPad + availH - barH;
         const pct = total > 0 ? ((val / total) * 100).toFixed(1) : '0.0';
         return `
-            <rect x="${x}" y="${y}" width="${barW}" height="${barH}" fill="${colors[label]}" rx="3" class="niner-grade-bar" data-label="${label}" data-val="${val}" data-pct="${pct}%"/>
-            <text x="${x + barW/2}" y="${topPad + availH + 16}" class="niner-bar-label" text-anchor="middle">${label}</text>
-            ${val > 0 ? `<text x="${x + barW/2}" y="${y - 5}" class="niner-bar-val" text-anchor="middle">${val}</text>` : ''}
+            <rect x="${x}" y="${y}" width="${barW}" height="${barH}" fill="${colors[label]}" rx="3"/>
+            <text x="${x + barW/2}" y="${topPad + availH + 16}" font-size="12" font-weight="700" font-family="General-Sans,sans-serif" fill="${(theme === 'dark' || theme === 'green') ? '#ffffff' : '#101820'}" text-anchor="middle">${label}</text>
+            ${val > 0 ? `<text x="${x + barW/2}" y="${y - 5}" font-size="10" font-weight="600" font-family="General-Sans,sans-serif" fill="${(theme === 'dark' || theme === 'green') ? 'rgba(255,255,255,0.7)' : 'rgba(16,24,32,0.6)'}" text-anchor="middle">${val}</text>` : ''}
         `;
     }).join('');
 
@@ -299,7 +315,8 @@ function buildGradeChart(gradeData, semesterKey) {
     `;
 }
 
-function renderGradeTab(gradeEl, gradeData, courseData, profName) {
+function renderGradeTab(gradeEl, gradeData, courseData, profName, theme) {
+    const currentTheme = theme || 'white';
     if (!gradeData) {
         gradeEl.innerHTML = '<div class="niner-grade-empty">No grade data found for this instructor and course.</div>';
         return;
@@ -310,19 +327,50 @@ function renderGradeTab(gradeEl, gradeData, courseData, profName) {
         `<option value="${s}">${s === 'all' ? 'All Semesters' : s}</option>`
     ).join('');
 
+    const semesterKeys = ['all', ...semesters];
+    let currentSemester = 'all';
+
     gradeEl.innerHTML = `
         <div class="niner-grade-header">
             <span class="niner-grade-prof">${gradeData.instructor} · ${courseData.subject} ${courseData.courseNumber}</span>
-            <select class="niner-grade-select">${dropdownOptions}</select>
+            <div class="niner-dropdown">
+                <button class="niner-dropdown-btn">
+                    <span class="niner-dropdown-label">All Semesters</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="niner-dropdown-menu">
+                    ${semesterKeys.map(s => `<div class="niner-dropdown-item${s === 'all' ? ' active' : ''}" data-val="${s}">${s === 'all' ? 'All Semesters' : s}</div>`).join('')}
+                </div>
+            </div>
         </div>
         <div class="niner-grade-chart-container">
-            ${buildGradeChart(gradeData, 'all')}
+            ${buildGradeChart(gradeData, 'all', currentTheme)}
         </div>
     `;
 
-    gradeEl.querySelector('.niner-grade-select').addEventListener('change', (e) => {
-        gradeEl.querySelector('.niner-grade-chart-container').innerHTML =
-            buildGradeChart(gradeData, e.target.value);
+    const dropdownBtn = gradeEl.querySelector('.niner-dropdown-btn');
+    const dropdownMenu = gradeEl.querySelector('.niner-dropdown-menu');
+    const dropdownLabel = gradeEl.querySelector('.niner-dropdown-label');
+
+    dropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('open');
+    });
+
+    gradeEl.querySelectorAll('.niner-dropdown-item').forEach(item => {
+        item.addEventListener('click', () => {
+            currentSemester = item.dataset.val;
+            dropdownLabel.textContent = currentSemester === 'all' ? 'All Semesters' : currentSemester;
+            gradeEl.querySelectorAll('.niner-dropdown-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            dropdownMenu.classList.remove('open');
+            gradeEl.querySelector('.niner-grade-chart-container').innerHTML =
+                buildGradeChart(gradeData, currentSemester, currentTheme);
+        });
+    });
+
+    document.addEventListener('click', function closeDropdown() {
+        dropdownMenu.classList.remove('open');
     });
 }
 
@@ -420,7 +468,9 @@ function openModal(clickedElement, rmpData) {
 
     const gradeEl = modalContainer.querySelector('#niner-tab-grades');
     getGradeData(courseData.subject, courseData.courseNumber, profName).then(gradeData => {
-        renderGradeTab(gradeEl, gradeData, courseData, profName);
+        chrome.storage.local.get('ninerTheme', (r) => {
+            renderGradeTab(gradeEl, gradeData, courseData, profName, r.ninerTheme || 'white');
+        });
     });
 }
 

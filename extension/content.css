@@ -240,7 +240,7 @@ td[xe-field="instructor"] {
 .niner-modal-container {
     width: 640px;
     max-height: 80vh;
-    border-radius: 0;
+    border-radius: 8px;
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.22);
     display: flex;
     flex-direction: column;
@@ -851,28 +851,7 @@ td[xe-field="instructor"] {
     font-weight: 600;
 }
 
-.niner-grade-select {
-    font-family: 'General-Sans', sans-serif !important;
-    font-size: 12px !important;
-    font-weight: 600 !important;
-    border-radius: 5px !important;
-    padding: 4px 28px 4px 8px !important;
-    cursor: pointer !important;
-    outline: none !important;
-    flex-shrink: 0 !important;
-    width: 175px !important;
-    min-width: 175px !important;
-    max-width: 175px !important;
-    box-sizing: border-box !important;
-    -webkit-appearance: none !important;
-    appearance: none !important;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
-    background-repeat: no-repeat !important;
-    background-position: right 8px center !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-    white-space: nowrap !important;
-}
+
 
 .niner-grade-chart-wrap {
     display: flex;
@@ -929,7 +908,7 @@ td[xe-field="instructor"] {
 .niner-theme-white .niner-grade-loading,
 .niner-theme-white .niner-grade-empty { color: rgba(0,0,0,0.35); }
 .niner-theme-white .niner-grade-prof { color: #2d3748; }
-.niner-theme-white .niner-grade-select { background: #f7f7f7; border: 1px solid rgba(0,0,0,0.12); color: #101820; }
+.niner-theme-white 
 .niner-theme-white .niner-grid-line { stroke: rgba(0,0,0,0.08); }
 .niner-theme-white .niner-axis-label { fill: rgba(0,0,0,0.4); }
 .niner-theme-white .niner-bar-label { fill: #101820; }
@@ -940,7 +919,7 @@ td[xe-field="instructor"] {
 .niner-theme-dark .niner-grade-loading,
 .niner-theme-dark .niner-grade-empty { color: rgba(255,255,255,0.35); }
 .niner-theme-dark .niner-grade-prof { color: rgba(255,255,255,0.8); }
-.niner-theme-dark .niner-grade-select { background: #1a1a1a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 8px center; border: 1px solid rgba(255,255,255,0.12); color: #ffffff; }
+.niner-theme-dark 
 .niner-theme-dark .niner-grid-line { stroke: rgba(255,255,255,0.08); }
 .niner-theme-dark .niner-axis-label { fill: rgba(255,255,255,0.4); }
 .niner-theme-dark .niner-bar-label { fill: #ffffff; }
@@ -951,9 +930,82 @@ td[xe-field="instructor"] {
 .niner-theme-green .niner-grade-loading,
 .niner-theme-green .niner-grade-empty { color: rgba(255,255,255,0.5); }
 .niner-theme-green .niner-grade-prof { color: rgba(255,255,255,0.9); }
-.niner-theme-green .niner-grade-select { background: #035a2f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 8px center; border: 1px solid rgba(255,255,255,0.2); color: #ffffff; }
+.niner-theme-green 
 .niner-theme-green .niner-grid-line { stroke: rgba(255,255,255,0.12); }
 .niner-theme-green .niner-axis-label { fill: rgba(255,255,255,0.5); }
 .niner-theme-green .niner-bar-label { fill: #ffffff; }
 .niner-theme-green .niner-bar-val { fill: rgba(255,255,255,0.7); }
 .niner-theme-green .niner-grade-stats-row { color: rgba(255,255,255,0.6); }
+
+.niner-dropdown {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.niner-dropdown-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    font-family: 'General-Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: none !important;
+    margin: 0 !important;
+    transition: opacity 0.15s;
+}
+
+.niner-dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    border-radius: 6px;
+    overflow-y: auto;
+    max-height: 220px;
+    min-width: 160px;
+    z-index: 999999;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+}
+
+.niner-dropdown-menu.open {
+    display: block;
+}
+
+.niner-dropdown-item {
+    padding: 7px 12px;
+    font-family: 'General-Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.1s;
+}
+
+/* White theme dropdown */
+.niner-theme-white .niner-dropdown-btn { background: #f0f0f0; color: #101820; }
+.niner-theme-white .niner-dropdown-btn:hover { opacity: 0.8; }
+.niner-theme-white .niner-dropdown-menu { background: #ffffff; border: 1px solid rgba(0,0,0,0.1); }
+.niner-theme-white .niner-dropdown-item { color: #101820; }
+.niner-theme-white .niner-dropdown-item:hover { background: #f5f5f5; }
+.niner-theme-white .niner-dropdown-item.active { background: #eaf4ef; color: #046A38; font-weight: 700; }
+
+/* Dark theme dropdown */
+.niner-theme-dark .niner-dropdown-btn { background: #1e1e1e; color: #ffffff; }
+.niner-theme-dark .niner-dropdown-btn:hover { opacity: 0.8; }
+.niner-theme-dark .niner-dropdown-menu { background: #1e1e1e; border: 1px solid rgba(255,255,255,0.1); }
+.niner-theme-dark .niner-dropdown-item { color: #ffffff; }
+.niner-theme-dark .niner-dropdown-item:hover { background: #2a2a2a; }
+.niner-theme-dark .niner-dropdown-item.active { background: #2a2a2a; color: #7bffb0; font-weight: 700; }
+
+/* Green theme dropdown */
+.niner-theme-green .niner-dropdown-btn { background: rgba(255,255,255,0.15); color: #ffffff; }
+.niner-theme-green .niner-dropdown-btn:hover { opacity: 0.8; }
+.niner-theme-green .niner-dropdown-menu { background: #035a2f; border: 1px solid rgba(255,255,255,0.15); }
+.niner-theme-green .niner-dropdown-item { color: #ffffff; }
+.niner-theme-green .niner-dropdown-item:hover { background: rgba(255,255,255,0.1); }
+.niner-theme-green .niner-dropdown-item.active { background: rgba(255,255,255,0.15); font-weight: 700; }

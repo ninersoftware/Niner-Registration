@@ -19,7 +19,7 @@
             "matches": [
                 "*://selfservice.uncc.edu/StudentRegistrationSsb/*"
             ],
-            "js": ["extension/content.js", "extension/modal.js", "extension/calendar.js"],
+            "js": ["extension/content.js", "extension/modal.js", "extension/grades.js", "extension/calendar.js"],
             "css": ["extension/content.css"],
             "all_frames": true
         }
@@ -33,7 +33,7 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": ["fonts/*"],
+            "resources": ["extension/data/grades.json", "fonts/*"],
             "matches": ["*://selfservice.uncc.edu/*"]
         }
     ],
