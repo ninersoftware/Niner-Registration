@@ -163,6 +163,10 @@ function injectOverview(cell, data, originalName) {
         event.stopPropagation();
         openModal(overview.querySelector('.professor-name'), data);
     });
+    expandBtn.addEventListener('mouseenter', () => {
+        const row = overview.closest('tr');
+        if (row) prefetchCourseDetails(row);
+    });
 
     setupCalBtn(overview.querySelector('.tooltip-cal-btn'), overview);
 
@@ -182,6 +186,8 @@ function injectOverview(cell, data, originalName) {
         if (rect.top < 100) {
             stats.style.top = rect.bottom + 'px';
         }
+        const row = overview.closest('tr');
+        if (row) prefetchCourseDetails(row);
     });
 }
 
@@ -222,6 +228,10 @@ function injectNotFound(cell, name) {
     expandBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         openModal(overview.querySelector('.professor-name-plain'), null);
+    });
+    expandBtn.addEventListener('mouseenter', () => {
+        const row = overview.closest('tr');
+        if (row) prefetchCourseDetails(row);
     });
 
     setupCalBtn(overview.querySelector('.tooltip-cal-btn'), overview);

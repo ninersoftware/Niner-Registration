@@ -75,6 +75,8 @@ function renderTray(trayCoursesEL, courses, onRemove) {
 }
 
 const BANNER_BASE = 'https://selfservice.uncc.edu/StudentRegistrationSsb/ssb/searchResults';
+const _detailsCache = new Map();
+const _pendingFetches = new Map();
 
 function getSyncToken() {
     return document.querySelector('meta[name="synchronizerToken"]')?.content || '';
@@ -154,6 +156,13 @@ function parseRestrictions(html) {
 }
 
 function populateOverviewTab(overviewEl, data) {
+    if (data.error) {
+        overviewEl.querySelector('.niner-ov-desc').textContent = "Couldn't fetch course info at this time.";
+        overviewEl.querySelector('.niner-ov-prereq').textContent = '—';
+        overviewEl.querySelector('.niner-ov-restrict').textContent = '—';
+        return;
+    }
+
     overviewEl.querySelector('.niner-ov-desc').textContent = data.description || 'N/A';
 
     const prereqEl = overviewEl.querySelector('.niner-ov-prereq');
@@ -198,28 +207,56 @@ function buildOverviewTabShell(courseData, rmpUrl) {
     `;
 }
 
-function loadCourseDetails(row, callback) {
-    const link = row.querySelector('a.section-details-link');
-    if (!link) {
-        callback({ description: null, prerequisites: null, restrictions: null });
-        return;
+function fetchCourseDetails(term, crn) {
+    if (_detailsCache.has(crn)) {
+        return Promise.resolve(_detailsCache.get(crn));
     }
 
-    const [term, crn] = link.dataset.attributes.split(',');
+    // If already in flight, return the same promise
+    if (_pendingFetches.has(crn)) {
+        return _pendingFetches.get(crn);
+    }
 
-    Promise.all([
+    const promise = Promise.all([
         bannerPost('getCourseDescription', term, crn),
         bannerPost('getSectionPrerequisites', term, crn),
         bannerPost('getRestrictions', term, crn),
     ]).then(([descHtml, prereqHtml, restrictHtml]) => {
-        callback({
+        const result = {
             description: parseDescription(descHtml),
             prerequisites: parsePrerequisites(prereqHtml),
             restrictions: parseRestrictions(restrictHtml),
-        });
+            error: false,
+        };
+        _detailsCache.set(crn, result);
+        _pendingFetches.delete(crn);
+        return result;
     }).catch(() => {
-        callback({ description: null, prerequisites: null, restrictions: null });
+        const result = { description: null, prerequisites: null, restrictions: null, error: true };
+        _pendingFetches.delete(crn);
+        return result;
     });
+
+    _pendingFetches.set(crn, promise);
+    return promise;
+}
+
+function prefetchCourseDetails(row) {
+    const link = row.querySelector('a.section-details-link');
+    if (!link) return;
+    const [term, crn] = link.dataset.attributes.split(',');
+    if (_detailsCache.has(crn) || _pendingFetches.has(crn)) return;
+    fetchCourseDetails(term, crn);
+}
+
+function loadCourseDetails(row, callback) {
+    const link = row.querySelector('a.section-details-link');
+    if (!link) {
+        callback({ description: null, prerequisites: null, restrictions: null, error: false });
+        return;
+    }
+    const [term, crn] = link.dataset.attributes.split(',');
+    fetchCourseDetails(term, crn).then(callback);
 }
 
 function calcGPA(grades) {
