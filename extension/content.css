@@ -36,7 +36,7 @@
     display: none;
     position: fixed;
     z-index: 9999;
-    background: #000000;
+    background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(8px);
     color: #ffffff;
     border-radius: 8px;
@@ -1009,3 +1009,34 @@ td[xe-field="instructor"] {
 .niner-theme-green .niner-dropdown-item { color: #ffffff; }
 .niner-theme-green .niner-dropdown-item:hover { background: rgba(255,255,255,0.1); }
 .niner-theme-green .niner-dropdown-item.active { background: rgba(255,255,255,0.15); font-weight: 700; }
+
+/* ── SCROLLBAR THEMES ─────────────────────────────── */
+
+.niner-modal-container *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.niner-modal-container *::-webkit-scrollbar-track {
+    background: transparent;
+}
+.niner-theme-white *::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+    border-radius: 4px;
+}
+.niner-theme-white *::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.25);
+}
+.niner-theme-dark *::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+}
+.niner-theme-dark *::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.25);
+}
+.niner-theme-green *::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+}
+.niner-theme-green *::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.3);
+}
