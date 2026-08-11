@@ -363,6 +363,7 @@ td[xe-field="instructor"] {
     flex-direction: column;
     gap: 18px;
     overflow-y: auto;
+    overflow-x: hidden;
     flex: 1;
 }
 
@@ -389,6 +390,8 @@ td[xe-field="instructor"] {
     font-size: 13px;
     font-weight: 400;
     line-height: 1.6;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .niner-ov-row {
@@ -1012,20 +1015,44 @@ td[xe-field="instructor"] {
 
 /* ── SCROLLBAR THEMES ─────────────────────────────── */
 
-.niner-modal-container *::-webkit-scrollbar {
+/* Firefox */
+.niner-modal-container,
+.niner-modal-container *,
+.niner-settings-overlay,
+.niner-settings-overlay * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
+.niner-theme-dark,
+.niner-theme-dark *,
+.niner-theme-green,
+.niner-theme-green * {
+    scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+
+/* WebKit sizing */
+.niner-modal-container *::-webkit-scrollbar,
+.niner-settings-overlay *::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
-.niner-modal-container *::-webkit-scrollbar-track {
+.niner-modal-container *::-webkit-scrollbar-track,
+.niner-settings-overlay *::-webkit-scrollbar-track {
     background: transparent;
 }
-.niner-theme-white *::-webkit-scrollbar-thumb {
+
+/* Light surfaces (white theme + settings panel) */
+.niner-theme-white *::-webkit-scrollbar-thumb,
+.niner-settings-overlay *::-webkit-scrollbar-thumb {
     background: rgba(0,0,0,0.15);
     border-radius: 4px;
 }
-.niner-theme-white *::-webkit-scrollbar-thumb:hover {
+.niner-theme-white *::-webkit-scrollbar-thumb:hover,
+.niner-settings-overlay *::-webkit-scrollbar-thumb:hover {
     background: rgba(0,0,0,0.25);
 }
+
+/* Dark surfaces */
 .niner-theme-dark *::-webkit-scrollbar-thumb {
     background: rgba(255,255,255,0.15);
     border-radius: 4px;
@@ -1033,6 +1060,8 @@ td[xe-field="instructor"] {
 .niner-theme-dark *::-webkit-scrollbar-thumb:hover {
     background: rgba(255,255,255,0.25);
 }
+
+/* Green surfaces */
 .niner-theme-green *::-webkit-scrollbar-thumb {
     background: rgba(255,255,255,0.2);
     border-radius: 4px;
