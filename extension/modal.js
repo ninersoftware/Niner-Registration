@@ -96,11 +96,18 @@ function bannerPost(endpoint, term, crn) {
     }).then(r => r.text());
 }
 
+function cleanBannerText(value) {
+    return String(value || '')
+        .replace(/\uFFFD+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
 function parseDescription(html) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const section = doc.querySelector('section[aria-labelledby="courseDescription"]');
     if (!section) return null;
-    const text = section.textContent.replace(/\s+/g, ' ').trim();
+    const text = cleanBannerText(section.textContent);
     return text || null;
 }
 
@@ -112,7 +119,7 @@ function parsePrerequisites(html) {
     // Group rows into bullet groups: AND starts a new group, OR appends to current
     const groups = [];
     rows.forEach((row) => {
-        const cells = [...row.querySelectorAll('td')].map(td => td.textContent.trim());
+        const cells = [...row.querySelectorAll('td')].map(td => cleanBannerText(td.textContent));
         const andOr = cells[0].toUpperCase();
         const subject = cells[4] || '';
         const courseNum = cells[5] || '';
@@ -138,7 +145,7 @@ function parsePrerequisites(html) {
 
 function parseRestrictions(html) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    const fullText = doc.body.textContent.replace(/\s+/g, ' ').trim();
+    const fullText = cleanBannerText(doc.body.textContent);
     if (!fullText || fullText.toLowerCase().includes('no restriction') || fullText.toLowerCase().includes('no course restriction')) return null;
 
     // Split on "Must be enrolled" boundaries into separate bullet points
