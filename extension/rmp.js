@@ -178,11 +178,39 @@ async function queryRMP(name) {
     return prof;
 }
 
+let initialPopupOpening = false;
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.openPopup) {
-        chrome.action.openPopup()
-            .then(() => sendResponse({ success: true }))
-            .catch(() => sendResponse({ success: false }));
+        (async () => {
+            const isInitialPopup = request.once === 'initial';
+
+            if (isInitialPopup) {
+                if (initialPopupOpening) {
+                    return { success: false, alreadyOpening: true };
+                }
+                initialPopupOpening = true;
+            }
+
+            try {
+                if (isInitialPopup) {
+                    const result = await chrome.storage.local.get('ninerInitialPopupShown');
+                    if (result.ninerInitialPopupShown) {
+                        return { success: false, alreadyShown: true };
+                    }
+                }
+
+                await chrome.action.openPopup();
+                if (isInitialPopup) {
+                    await chrome.storage.local.set({ ninerInitialPopupShown: true });
+                }
+                return { success: true };
+            } catch (error) {
+                return { success: false };
+            } finally {
+                if (isInitialPopup) initialPopupOpening = false;
+            }
+        })().then(sendResponse);
         return true;
     }
     if (request.professorName) {

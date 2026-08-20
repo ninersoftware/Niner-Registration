@@ -524,15 +524,15 @@ function openModal(clickedElement, rmpData) {
         }
     });
 
-    const footerLinks = modalContainer.querySelector('.niner-ov-links');
+    const footer = modalContainer.querySelector('.niner-modal-footer');
     modalContainer.querySelectorAll('.niner-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             modalContainer.querySelectorAll('.niner-tab').forEach(t => t.classList.remove('active'));
             modalContainer.querySelectorAll('.niner-tab-content').forEach(c => c.classList.remove('active'));
             tab.classList.add('active');
             modalContainer.querySelector(`#niner-tab-${tab.dataset.tab}`).classList.add('active');
-            if (footerLinks) {
-                footerLinks.style.display = tab.dataset.tab === 'overview' ? 'flex' : 'none';
+            if (footer) {
+                footer.style.display = tab.dataset.tab === 'overview' ? 'flex' : 'none';
             }
         });
     });

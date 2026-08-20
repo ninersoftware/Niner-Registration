@@ -64,7 +64,7 @@ function syncCalBtn(calBtn, courseData) {
 }
 
 function addCourseToQueue(courseData, onAdded, onRemoved) {
-    chrome.storage.local.get(['ninerQueue', 'ninerPopupShown'], (result) => {
+    chrome.storage.local.get('ninerQueue', (result) => {
         const queue = result.ninerQueue || [];
         const alreadyAdded = queue.some(c =>
             c.subject === courseData.subject &&
@@ -81,11 +81,6 @@ function addCourseToQueue(courseData, onAdded, onRemoved) {
             };
             chrome.storage.local.set({ ninerQueue: [...queue, courseToSave] });
             if (onAdded) onAdded();
-
-            if (!result.ninerPopupShown) {
-                chrome.storage.local.set({ ninerPopupShown: true });
-                chrome.runtime.sendMessage({ openPopup: true });
-            }
         } else {
             const newQueue = queue.filter(c =>
                 !(c.subject === courseData.subject &&
@@ -298,6 +293,17 @@ const observer = new MutationObserver(() => {
 });
 
 observer.observe(document.body, { childList: true, subtree: true });
+
+// Show the calendar builder once on the first registration-page view. The
+// service worker owns the persistent one-time gate so multiple frames/tabs
+// cannot repeatedly open the popup.
+if (window.top === window) {
+    chrome.runtime.sendMessage({ openPopup: true, once: 'initial' }, () => {
+        // Consume runtime.lastError when the popup cannot be opened in an
+        // unsupported/closed browser context; the page itself still works.
+        void chrome.runtime.lastError;
+    });
+}
 
 chrome.storage.local.onChanged.addListener((changes) => {
     if (changes.ninerTheme) {
