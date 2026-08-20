@@ -31,25 +31,25 @@ function applyTooltipTheme(stats, theme) {
 
     const calBtn = stats.querySelector('.tooltip-cal-btn');
     const expandBtn = stats.querySelector('.tooltip-expand-btn');
-    const defaultColor = isLight ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.6)';
-    const hoverColor = isLight ? 'rgba(0,0,0,0.85)' : '#ffffff';
-    const hoverBg = isLight ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.1)';
+    // Bold, consistent contrast on every theme so buttons pop against their background
+    const defaultColor = isLight ? '#000000' : '#ffffff';
+    const hoverBg = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.15)';
 
     [calBtn, expandBtn].forEach(btn => {
         if (!btn) return;
         btn.style.color = defaultColor;
+        btn.style.opacity = '1';
         btn.onmouseenter = () => {
-            btn.style.color = hoverColor;
             btn.style.background = hoverBg;
         };
         btn.onmouseleave = () => {
-            btn.style.color = defaultColor;
             btn.style.background = 'none';
         };
     });
 }
 
 const calendarIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>`;
+const infoIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
 
 function syncCalBtn(calBtn, courseData) {
     chrome.storage.local.get('ninerQueue', (result) => {
@@ -63,38 +63,50 @@ function syncCalBtn(calBtn, courseData) {
     });
 }
 
+function addCourseToQueue(courseData, onAdded, onRemoved) {
+    chrome.storage.local.get(['ninerQueue', 'ninerPopupShown'], (result) => {
+        const queue = result.ninerQueue || [];
+        const alreadyAdded = queue.some(c =>
+            c.subject === courseData.subject &&
+            c.courseNumber === courseData.courseNumber
+        );
+
+        if (!alreadyAdded) {
+            const courseToSave = {
+                subject: courseData.subject,
+                courseNumber: courseData.courseNumber,
+                title: courseData.title,
+                credits: courseData.credits,
+                meetings: courseData.meetings
+            };
+            chrome.storage.local.set({ ninerQueue: [...queue, courseToSave] });
+            if (onAdded) onAdded();
+
+            if (!result.ninerPopupShown) {
+                chrome.storage.local.set({ ninerPopupShown: true });
+                chrome.runtime.sendMessage({ openPopup: true });
+            }
+        } else {
+            const newQueue = queue.filter(c =>
+                !(c.subject === courseData.subject &&
+                c.courseNumber === courseData.courseNumber)
+            );
+            chrome.storage.local.set({ ninerQueue: newQueue });
+            if (onRemoved) onRemoved();
+        }
+    });
+}
+
 function setupCalBtn(calBtn, overview) {
     calBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         const courseData = parseCourseRow(overview);
         if (!courseData) return;
-        chrome.storage.local.get('ninerQueue', (result) => {
-            const queue = result.ninerQueue || [];
-            const alreadyAdded = queue.some(c =>
-                c.subject === courseData.subject &&
-                c.courseNumber === courseData.courseNumber
-            );
-            if (!alreadyAdded) {
-                const courseToSave = {
-                    subject: courseData.subject,
-                    courseNumber: courseData.courseNumber,
-                    title: courseData.title,
-                    credits: courseData.credits,
-                    meetings: courseData.meetings
-                };
-                chrome.storage.local.set({ ninerQueue: [...queue, courseToSave] });
-                calBtn.innerHTML = `${calendarIconSvg} ✓ Added`;
-                calBtn.title = 'Added to calendar';
-            } else {
-                const newQueue = queue.filter(c =>
-                    !(c.subject === courseData.subject &&
-                    c.courseNumber === courseData.courseNumber)
-                );
-                chrome.storage.local.set({ ninerQueue: newQueue });
-                calBtn.innerHTML = `${calendarIconSvg} Add`;
-                calBtn.title = 'Add to calendar';
-            }
-        });
+        addCourseToQueue(
+            courseData,
+            () => { calBtn.innerHTML = `${calendarIconSvg} ✓ Added`; calBtn.title = 'Added to calendar'; },
+            () => { calBtn.innerHTML = `${calendarIconSvg} Add`; calBtn.title = 'Add to calendar'; }
+        );
     });
 
     // Initial state
@@ -127,7 +139,7 @@ function injectOverview(cell, data, originalName) {
             <button class="tooltip-cal-btn" title="Add to calendar">
                 ${calendarIconSvg} Add
             </button>
-            <button class="tooltip-expand-btn" title="Detailed view">⤢</button>
+            <button class="tooltip-expand-btn" title="Detailed view">${infoIconSvg} Info</button>
         </div>
         <div class="professor-header">
             <span class="professor-full-name"><strong>${data.firstName} ${data.lastName}</strong></span>
@@ -205,7 +217,7 @@ function injectNotFound(cell, name) {
             <button class="tooltip-cal-btn" title="Add to calendar">
                 ${calendarIconSvg} Add
             </button>
-            <button class="tooltip-expand-btn" title="Detailed view">⤢</button>
+            <button class="tooltip-expand-btn" title="Detailed view">${infoIconSvg} Info</button>
         </div>
         <div class="professor-header">
             <span class="professor-full-name"><strong>${name}</strong></span>
@@ -308,5 +320,18 @@ chrome.storage.local.onChanged.addListener((changes) => {
             btn.innerHTML = isAdded ? `${calendarIconSvg} ✓ Added` : `${calendarIconSvg} Add`;
             btn.title = isAdded ? 'Added to calendar' : 'Add to calendar';
         });
+
+        // Sync modal's Add to Calendar button if the modal is currently open
+        const modalCalBtn = document.querySelector('.niner-modal-cal-btn');
+        if (modalCalBtn && window._ninerModalCourseData) {
+            const courseData = window._ninerModalCourseData;
+            const isAdded = queue.some(c =>
+                c.subject === courseData.subject &&
+                c.courseNumber === courseData.courseNumber
+            );
+            const modalCalIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+            const modalCalCheckSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+            modalCalBtn.innerHTML = isAdded ? `${modalCalCheckSvg} Added` : `${modalCalIconSvg} Add to Calendar`;
+        }
     }
 });

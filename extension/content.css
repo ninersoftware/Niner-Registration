@@ -200,29 +200,24 @@ td[xe-field="instructor"] {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 3px 5px;
+    padding: 3px 6px;
     border-radius: 4px;
     font-size: 12px;
     font-weight: 700;
-    color: rgba(255,255,255,0.6);
     font-family: 'General-Sans', sans-serif;
     display: flex;
     align-items: center;
     gap: 4px;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.15s;
     box-shadow: none !important;
     margin: 0 !important;
     line-height: 1;
+    white-space: nowrap;
 }
 
 .tooltip-cal-btn:hover,
 .tooltip-expand-btn:hover {
     background: rgba(255,255,255,0.1);
-    color: #ffffff;
-}
-
-.tooltip-expand-btn {
-    font-size: 14px;
 }
 
 /* ── MODAL ────────────────────────────────────────── */
@@ -410,12 +405,6 @@ td[xe-field="instructor"] {
     font-weight: 400;
 }
 
-.niner-ov-links {
-    display: flex;
-    gap: 20px;
-    padding-top: 4px;
-}
-
 /* ── GRADE PLACEHOLDER ────────────────────────────── */
 
 .niner-grade-placeholder-wrap {
@@ -434,22 +423,45 @@ td[xe-field="instructor"] {
 
 .niner-ov-links {
     display: flex;
-    gap: 10px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    align-items: center;
+    gap: 18px;
 }
 
 .niner-ov-links .niner-link {
     display: inline-flex !important;
     align-items: center;
-    gap: 5px;
-    padding: 5px 12px 5px 0;
+    gap: 4px;
+    padding: 0;
     border-radius: 5px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     text-decoration: none !important;
     transition: opacity 0.15s;
     background: none !important;
+}
+
+.niner-ov-links .niner-link::after {
+    content: '';
+    width: 11px;
+    height: 11px;
+    background-color: currentColor;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='7' y1='17' x2='17' y2='7'/%3E%3Cpolyline points='7 7 17 7 17 17'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='7' y1='17' x2='17' y2='7'/%3E%3Cpolyline points='7 7 17 7 17 17'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    opacity: 0;
+    transform: translate(-2px, 2px);
+    transition: opacity 0.15s, transform 0.15s;
+    display: inline-block;
+}
+
+.niner-ov-links .niner-link:hover::after {
+    opacity: 1;
+    transform: translate(0, 0);
 }
 
 .niner-ov-links .niner-link:hover {
@@ -465,9 +477,9 @@ td[xe-field="instructor"] {
 
 .niner-modal-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
-    padding: 10px 24px 14px 24px;
+    padding: 14px 24px 20px 24px;
     flex-shrink: 0;
 }
 
@@ -495,7 +507,7 @@ td[xe-field="instructor"] {
     align-items: center;
     gap: 0;
     margin: 0 24px 14px 24px;
-    border-radius: 999px;
+    border-radius: 8px;
     padding: 4px 4px;
     border: none;
 }
@@ -504,7 +516,7 @@ td[xe-field="instructor"] {
     background: #046A38;
     color: #ffffff;
     border: none;
-    border-radius: 999px;
+    border-radius: 8px;
     padding: 6px 16px;
     font-size: 11px;
     font-weight: 700;
@@ -548,7 +560,7 @@ td[xe-field="instructor"] {
     padding: 4px 10px;
     background: #f0f7f3;
     border: 1px solid rgba(4, 106, 56, 0.25);
-    border-radius: 999px;
+    border-radius: 8px;
     font-size: 11px;
     font-weight: 600;
     color: #046A38;
@@ -589,7 +601,7 @@ td[xe-field="instructor"] {
 .niner-tray-btn {
     background: none;
     border: none;
-    border-radius: 999px;
+    border-radius: 8px;
     padding: 5px 10px;
     font-size: 11px;
     font-weight: 600;
@@ -756,8 +768,7 @@ td[xe-field="instructor"] {
 .niner-theme-white .niner-link { color: #1e4a9e !important; }
 .niner-theme-white .niner-link-coursicle { color: #0077cc !important; }
 .niner-theme-white .niner-link-rmp { color: #1a3a8f !important; }
-.niner-theme-white .niner-modal-footer { border-top: 1px solid rgba(0,0,0,0.07); }
-.niner-theme-white .niner-credit { color: #a0aec0; }
+.niner-theme-white .niner-modal-footer { border-top: none; }
 .niner-theme-white .niner-tray { background: #f2f2f2; }
 .niner-theme-white .niner-tray-empty { color: #718096; }
 .niner-theme-white .niner-tray-btn { color: #4a5568; }
@@ -787,8 +798,7 @@ td[xe-field="instructor"] {
 .niner-theme-dark .niner-link { color: #9bc5ff !important; }
 .niner-theme-dark .niner-link-coursicle { color: #60b8f5 !important; }
 .niner-theme-dark .niner-link-rmp { color: #7b9fff !important; }
-.niner-theme-dark .niner-modal-footer { border-top: 1px solid rgba(255,255,255,0.08); }
-.niner-theme-dark .niner-credit { color: rgba(255,255,255,0.25); }
+.niner-theme-dark .niner-modal-footer { border-top: none; }
 .niner-theme-dark .niner-tray { background: #111111; }
 .niner-theme-dark .niner-tray-empty { color: rgba(255,255,255,0.4); }
 .niner-theme-dark .niner-tray-btn { color: rgba(255,255,255,0.4); }
@@ -819,8 +829,7 @@ td[xe-field="instructor"] {
 .niner-theme-green .niner-link { color: #ffffff !important; font-weight: 700; }
 .niner-theme-green .niner-link-coursicle { color: #ffffff !important; }
 .niner-theme-green .niner-link-rmp { color: #ffffff !important; }
-.niner-theme-green .niner-modal-footer { border-top: 1px solid rgba(255,255,255,0.15); }
-.niner-theme-green .niner-credit { color: rgba(255,255,255,0.4); }
+.niner-theme-green .niner-modal-footer { border-top: none; }
 .niner-theme-green .niner-tray { background: #035a2f; }
 .niner-theme-green .niner-tray-empty { color: rgba(255,255,255,0.55); }
 .niner-theme-green .niner-tray-btn { color: rgba(255,255,255,0.5); }
@@ -1069,3 +1078,26 @@ td[xe-field="instructor"] {
 .niner-theme-green *::-webkit-scrollbar-thumb:hover {
     background: rgba(255,255,255,0.3);
 }
+/* ── MODAL ADD TO CALENDAR BUTTON ─────────────────── */
+
+.niner-modal-cal-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'General-Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 0;
+    margin: 0 !important;
+    box-shadow: none !important;
+    transition: opacity 0.15s;
+}
+
+.niner-modal-cal-btn:hover { opacity: 0.7; }
+
+.niner-theme-white .niner-modal-cal-btn { color: #000000; }
+.niner-theme-dark .niner-modal-cal-btn  { color: #ffffff; }
+.niner-theme-green .niner-modal-cal-btn { color: #ffffff; }

@@ -194,16 +194,6 @@ function buildOverviewTabShell(courseData, rmpUrl) {
             <div class="niner-ov-label">Restrictions</div>
             <div class="niner-ov-text niner-ov-restrict">Loading...</div>
         </div>
-        <div class="niner-ov-links">
-            <a class="niner-link niner-link-coursicle" href="https://www.coursicle.com/uncc/courses/${courseData.subject}/${courseData.courseNumber}/" target="_blank">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                Coursicle
-            </a>
-            <a class="niner-link niner-link-rmp" href="${rmpUrl}" target="_blank">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                RateMyProfessors
-            </a>
-        </div>
     `;
 }
 
@@ -417,6 +407,7 @@ function openModal(clickedElement, rmpData) {
 
     const courseData = parseCourseRow(clickedElement);
     const profName = clickedElement.textContent.trim().replace('↗', '').trim();
+    window._ninerModalCourseData = courseData;
 
     const overlay = document.createElement('div');
     overlay.id = 'niner-registration-modal';
@@ -468,14 +459,54 @@ function openModal(clickedElement, rmpData) {
         </div>
 
         <div class="niner-modal-footer">
-            <span class="niner-credit">© 2026 ninersoftware</span>
+            <div class="niner-ov-links">
+                <a class="niner-link niner-link-coursicle" href="https://www.coursicle.com/uncc/courses/${courseData.subject}/${courseData.courseNumber}/" target="_blank">
+                    Coursicle
+                </a>
+                <a class="niner-link niner-link-rmp" href="${rmpUrl}" target="_blank">
+                    RateMyProfessors
+                </a>
+            </div>
+            <button class="niner-modal-cal-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add to Calendar
+            </button>
         </div>
     `;
 
     overlay.appendChild(modalContainer);
     document.body.appendChild(overlay);
 
-    modalContainer.querySelector('.niner-close-btn').addEventListener('click', () => overlay.remove());
+    modalContainer.querySelector('.niner-close-btn').addEventListener('click', () => {
+        overlay.remove();
+        window._ninerModalCourseData = null;
+    });
+
+    const modalCalBtn = modalContainer.querySelector('.niner-modal-cal-btn');
+    const modalCalIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+    const modalCalCheckSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+    const setModalCalBtnState = (isAdded) => {
+        modalCalBtn.innerHTML = isAdded
+            ? `${modalCalCheckSvg} Added`
+            : `${modalCalIconSvg} Add to Calendar`;
+    };
+
+    // Sync initial state against current queue
+    chrome.storage.local.get('ninerQueue', (result) => {
+        const queue = result.ninerQueue || [];
+        const isAdded = queue.some(c =>
+            c.subject === courseData.subject && c.courseNumber === courseData.courseNumber
+        );
+        setModalCalBtnState(isAdded);
+    });
+
+    modalCalBtn.addEventListener('click', () => {
+        addCourseToQueue(
+            courseData,
+            () => setModalCalBtnState(true),
+            () => setModalCalBtnState(false)
+        );
+    });
 
     const crnBtn = modalContainer.querySelector('.niner-crn-btn');
     crnBtn.addEventListener('click', () => {
@@ -486,14 +517,23 @@ function openModal(clickedElement, rmpData) {
             setTimeout(() => { val.textContent = orig; }, 1500);
         });
     });
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+            window._ninerModalCourseData = null;
+        }
+    });
 
+    const footerLinks = modalContainer.querySelector('.niner-ov-links');
     modalContainer.querySelectorAll('.niner-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             modalContainer.querySelectorAll('.niner-tab').forEach(t => t.classList.remove('active'));
             modalContainer.querySelectorAll('.niner-tab-content').forEach(c => c.classList.remove('active'));
             tab.classList.add('active');
             modalContainer.querySelector(`#niner-tab-${tab.dataset.tab}`).classList.add('active');
+            if (footerLinks) {
+                footerLinks.style.display = tab.dataset.tab === 'overview' ? 'flex' : 'none';
+            }
         });
     });
 
@@ -513,7 +553,6 @@ function openModal(clickedElement, rmpData) {
 
 function parseCourseRow(clickedElement) {
     const row = clickedElement.closest('tr');
-    console.log('row found:', row);
     if (!row) return null;
 
     const subject = row.querySelector('[xe-field="subject"]')?.textContent?.trim() || '';
