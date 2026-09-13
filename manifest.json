@@ -2,9 +2,9 @@
     "manifest_version": 3,
     "name": "Niner Registration",
     "version": "2.0",
-    "description": "Chrome extension that embeds RateMyProfessors data directly into UNCC course registration portal.",
+    "description": "An all-in-one registration tool for Charlotte students.",
     "author": "austinkmangold@gmail.com",
-    "homepage_url": "https://github.com/ausmango/NinerRatings",
+    "homepage_url": "https://github.com/ninersoftware/Niner-Registration",
     "permissions": ["storage", "scripting"],
     "action": {
         "default_popup": "extension/popup.html",
