@@ -1,4 +1,4 @@
-﻿# Niner Registration
+# Niner Registration
 
 ![Niner Registration Preview](data/images/chromepromo.png)
 
@@ -36,11 +36,11 @@ git clone https://github.com/ninersoftware/Niner-Registration.git
 
 2. Open `chrome://extensions/` in Chrome.
 
-3. Enable **Developer mode**.
+3. Enable **Developer mode** using the toggle in the top-right corner.
 
-4. Click **Load unpacked**.
+4. Click **Load unpacked** in the top-left toolbar.
 
-5. Select the `NinerRegistration` folder from the cloned repository.
+5. Select the `Niner-Registration` root repository directory (the folder containing `manifest.json`).
 
 6. Open the UNC Charlotte registration portal. Niner Registration will automatically integrate with the page.
 
@@ -53,7 +53,10 @@ git clone https://github.com/ninersoftware/Niner-Registration.git
 cd Niner-Registration
 ```
 
-Make your changes, then reload the extension from `chrome://extensions/` to test them.
+Make your changes in the codebase. To test your updates:
+1. Open `chrome://extensions/`.
+2. Find **Niner Registration** and click the **Reload** (🔄) button.
+3. Refresh any open UNC Charlotte registration tab (`Ctrl+R` / `Cmd+R`) to test the updated scripts and styles.
 
 ## Contributing
 
@@ -88,4 +91,4 @@ When reporting a bug, please include:
 
 ## License
 
-See the repository license for information about using and contributing to Niner Registration.
+This project is licensed under the [MIT License](LICENSE).
