@@ -9,8 +9,8 @@
     "action": {
         "default_popup": "extension/popup.html",
         "default_icon": {
-            "16": "icons/logo128px.png",
-            "48": "icons/logo128px.png",
+            "16": "icons/logo16px.png",
+            "48": "icons/logo48px.png",
             "128": "icons/logo128px.png"
         }
     },
@@ -25,7 +25,8 @@
         }
     ],
     "background": {
-        "service_worker": "extension/rmp.js"
+        "service_worker": "extension/rmp.js",
+        "scripts": ["extension/rmp.js"]
     },
     "host_permissions": [
         "https://www.ratemyprofessors.com/*",
@@ -33,13 +34,22 @@
     ],
     "web_accessible_resources": [
         {
-            "resources": ["extension/data/grades.json", "fonts/*"],
+            "resources": ["extension/data/grades.json"],
             "matches": ["*://selfservice.uncc.edu/*"]
         }
     ],
     "icons": {
-        "16": "icons/logo128px.png",
-        "48": "icons/logo128px.png",
+        "16": "icons/logo16px.png",
+        "48": "icons/logo48px.png",
         "128": "icons/logo128px.png"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "contact@zagog629.8shield.net",
+            "strict_min_version": "121.0",
+            "data_collection_permissions": {
+                "required": ["none"]
+            }
+        }
     }
 }
