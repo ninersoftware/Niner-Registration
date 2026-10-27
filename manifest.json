@@ -46,9 +46,9 @@
     "browser_specific_settings": {
         "gecko": {
             "id": "contact@zagog629.8shield.net",
-            "strict_min_version": "121.0",
+            "strict_min_version": "140.0",
             "data_collection_permissions": {
-                "required": ["none"]
+                "required": ["websiteContent"]
             }
         }
     }

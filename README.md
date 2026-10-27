@@ -18,11 +18,13 @@ Niner Registration improves the course registration experience by bringing profe
 
 ## Installation
 
-### Chrome Web Store
+### Chrome & Firefox
 
-Niner Registration is available on the Chrome Web Store.
+Niner Registration is available on the Chrome Web Store and through Firefox addons.
 
-[Install Niner Registration](https://chromewebstore.google.com/detail/niner-registration/fiboihoabbagmckkhjbbeiaoiiimfaec?hl=en-US)
+[Chrome Web Store](https://chromewebstore.google.com/detail/niner-registration/fiboihoabbagmckkhjbbeiaoiiimfaec?hl=en-US)
+
+[Firefox Addons](https://addons.mozilla.org/en-US/firefox/addon/niner-registration/)
 
 ### Manual Installation
 
